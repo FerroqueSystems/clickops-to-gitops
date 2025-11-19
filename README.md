@@ -50,6 +50,6 @@ It is designed as a **teaching repo** – not production-ready code – to show 
     1. Terraform: terraform init && terraform validate
     2. Ansible: ansible-lint (if installed)
 
-5. ""Hook up your CI/CD**
+5. **Hook up your CI/CD**
 
     1. Use pipelines/github-actions/ as a reference for your own pipeline.
