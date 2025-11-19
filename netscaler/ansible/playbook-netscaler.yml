@@ -1,0 +1,9 @@
+---
+- name: Example NetScaler configuration playbook (placeholder)
+  hosts: netscaler
+  gather_facts: no
+
+  tasks:
+    - name: Echo that this is a placeholder NetScaler playbook
+      debug:
+        msg: "NetScaler configuration tasks would go here."

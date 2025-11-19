@@ -1,0 +1,4 @@
+---
+- name: Echo that this is a placeholder Citrix baseline role
+  debug:
+    msg: "Citrix baseline role would be applied here."

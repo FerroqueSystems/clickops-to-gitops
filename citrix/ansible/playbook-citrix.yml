@@ -1,0 +1,7 @@
+---
+- name: Example Citrix configuration playbook (placeholder)
+  hosts: citrix
+  gather_facts: no
+
+  roles:
+    - citrix-baseline
