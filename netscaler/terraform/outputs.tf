@@ -1,65 +1,29 @@
-variable "resource_group_name" {
-  description = "Name for the resource group that will contain all created resources"
-  default     = "clickops-resource-group"
+﻿output "resource_group_name" {
+  description = "Name of the resource group created"
+  value       = azurerm_resource_group.terraform-resource-group.name
 }
 
-variable "location" {
-  description = "Azure location where all resources will be created"
+output "virtual_network_name" {
+  description = "Name of the virtual network"
+  value       = azurerm_virtual_network.terraform-virtual-network.name
 }
 
-variable "virtual_network_address_space" {
-  description = "Address space for the virtual network."
+output "ubuntu_public_ip" {
+  description = "Public IP address of the ubuntu bastion host"
+  value       = azurerm_public_ip.terraform-ubuntu-public-ip.ip_address
 }
 
-variable "management_subnet_address_prefix" {
-  description = "The address prefix that will be used for the management subnet. Must be contained inside the VNet address space"
+output "adc_public_ips" {
+  description = "Public IP addresses for ADC management interfaces (may be empty if not provisioned)"
+  value       = azurerm_public_ip.terraform-adc-management-public-ip[*].ip_address
 }
 
-variable "client_subnet_address_prefix" {
-  description = "The address prefix that will be used for the client subnet. Must be contained inside the VNet address space"
+output "load_balancer_public_ips" {
+  description = "Public IP(s) for the load balancer (empty array if HA internal LB is used)"
+  value       = azurerm_public_ip.terraform-load-balancer-public-ip[*].ip_address
 }
 
-variable "server_subnet_address_prefix" {
-  description = "The address prefix that will be used for the server subnet. Must be contained inside the VNet address space"
-}
-
-variable "adc_admin_username" {
-  description = "User name for the Citrix ADC admin user."
-  default     = "nsroot"
-}
-
-variable "adc_admin_password" {
-  description = "Password for the Citrix ADC admin user. Must be sufficiently complex to pass azurerm provider checks."
-}
-variable "citrixadc_rpc_node_password" {
-  description = "The new ADC RPC node password that will replace the default one on both ADC instances. [Learn More about RPCNode](https://docs.citrix.com/en-us/citrix-adc/current-release/getting-started-with-citrix-adc/change-rpc-node-password.html)"
-}
-
-variable "ssh_public_key_file" {
-  description = "Public key file for accessing the ubuntu bastion machine."
-  default     = "~/.ssh/id_ed25519_pub.cer"
-}
-
-variable "ubuntu_vm_size" {
-  description = "Size for the ubuntu machine."
-  default     = "Standard_A1_v2"
-}
-
-variable "ubuntu_admin_user" {
-  description = "User name for ubuntu admin"
-  default     = "adminuser"
-}
-
-variable "controlling_subnet" {
-  description = "The CIDR block of the machines that will be allowed access to the management subnet."
-}
-
-variable "adc_vm_size" {
-  description = "Size for the ADC machine. Must allow for 3 NICs."
-  default     = "Standard_F8s_v2"
-}
-
-variable "ha_for_internal_lb" {
-  description = "Whether to use HA for the internal load balancer."
-  default     = false
+output "ubuntu_private_ip" {
+  description = "Private IP of the ubuntu management interface"
+  value       = azurerm_network_interface.terraform-ubuntu-management-interface.private_ip_address
 }
