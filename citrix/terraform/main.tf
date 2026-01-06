@@ -5,7 +5,7 @@ terraform {
     # Example provider; adjust to your environment
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~> 3.0"
+      version = ">= 4.0, < 5.0"
     }
   }
 }
