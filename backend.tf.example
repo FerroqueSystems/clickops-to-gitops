@@ -1,0 +1,11 @@
+terraform {
+  backend "azurerm" {
+    resource_group_name  = "rg-terraform-state"
+    storage_account_name = "tfstate<unique>"
+    container_name       = "tfstate"
+    key                  = "clickops-to-gitops.terraform.tfstate"
+  }
+}
+
+# Replace the placeholders above with your values and save as `backend.tf`.
+# To bootstrap the storage account/container use the Azure CLI or Azure Portal.
