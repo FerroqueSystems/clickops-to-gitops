@@ -1,0 +1,50 @@
+name: Terraform Plan (Azure OIDC) - Manual
+
+on:
+  workflow_dispatch:
+    inputs:
+      component:
+        description: "Which component to plan"
+        required: true
+        type: choice
+        options:
+          - citrix
+          - netscaler
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Azure Login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init & Plan
+        env:
+          ARM_USE_OIDC: "true"
+          ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+          ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+        run: |
+          set -euo pipefail
+          if [ "${{ inputs.component }}" = "citrix" ]; then
+            cd citrix/terraform
+          else
+            cd netscaler/terraform
+          fi
+
+          terraform fmt -check -recursive
+          terraform init
+          terraform plan

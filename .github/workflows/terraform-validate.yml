@@ -1,0 +1,29 @@
+name: Terraform Validate (No Cloud)
+
+on:
+  pull_request:
+    branches: ["main"]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+
+      - name: Validate (Citrix)
+        working-directory: citrix/terraform
+        run: |
+          terraform init -backend=false
+          terraform fmt -check -recursive
+          terraform validate
+
+      - name: Validate (NetScaler)
+        working-directory: netscaler/terraform
+        run: |
+          terraform init -backend=false
+          terraform fmt -check -recursive
+          terraform validate
