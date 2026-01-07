@@ -37,12 +37,23 @@ jobs:
           ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
           ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
           ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+          # 🔐 Add secrets here (TF_VAR_<terraform variable name>)
+          TF_VAR_adc_admin_username: ${{ secrets.ADC_ADMIN_USERNAME }}
+          TF_VAR_adc_admin_password: ${{ secrets.ADC_ADMIN_PASSWORD }}
+          TF_VAR_citrixadc_rpc_node_password: ${{ secrets.CITRIXADC_RPC_NODE_PASSWORD }}
+
         run: |
           set -euo pipefail
           if [ "${{ inputs.component }}" = "citrix" ]; then
             cd citrix/terraform
+            terraform fmt -check -recursive
+            terraform init -backend=false
+            terraform plan
           else
             cd netscaler/terraform
+            terraform fmt -check -recursive
+            terraform init
+            terraform plan -var-file=clickops.tfvars
           fi
 
           terraform fmt -check -recursive
