@@ -24,7 +24,7 @@ jobs:
           subscription-id: ${{ secrets.ARM_SUBSCRIPTION_ID }}
 
       - name: Terraform Init & Apply (Citrix)
-        working-directory: ./citrix/terraform
+        working-directory: ./infra/workloads/citrix/terraform
         env:
           TF_VAR_netscaler_password: ${{ secrets.NETSCALER_PASSWORD }}
           ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
@@ -37,7 +37,7 @@ jobs:
           terraform apply -auto-approve
 
       - name: Terraform Init & Apply (NetScaler)
-        working-directory: ./netscaler/terraform
+        working-directory: ./infra/workloads/netscaler/terraform
         env:
           TF_VAR_netscaler_password: ${{ secrets.NETSCALER_PASSWORD }}
           ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}

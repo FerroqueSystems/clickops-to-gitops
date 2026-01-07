@@ -16,7 +16,7 @@ jobs:
         uses: hashicorp/setup-terraform@v3
 
       - name: Terraform Format Check (Citrix)
-        working-directory: ./citrix/terraform
+        working-directory: ./infra/workloads/citrix/terraform
         run: |
           terraform fmt -check -diff
 
@@ -25,7 +25,7 @@ jobs:
           curl -sSfL https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
 
       - name: TFLint Init & Run (Citrix)
-        working-directory: ./citrix/terraform
+        working-directory: ./infra/workloads/citrix/terraform
         run: |
           tflint --init || true
           tflint || true
@@ -33,21 +33,21 @@ jobs:
       - name: tfsec Scan (Citrix)
         uses: aquasecurity/tfsec-action@v1
         with:
-          directory: ./citrix/terraform
+          directory: ./infra/workloads/citrix/terraform
 
       - name: Terraform Validate (Citrix)
-        working-directory: ./citrix/terraform
+        working-directory: ./infra/workloads/citrix/terraform
         run: |
           terraform init -backend=false
           terraform validate
 
       - name: Terraform Format Check (NetScaler)
-        working-directory: ./netscaler/terraform
+        working-directory: ./infra/workloads/netscaler/terraform
         run: |
           terraform fmt -check -diff
 
       - name: TFLint Init & Run (NetScaler)
-        working-directory: ./netscaler/terraform
+        working-directory: ./infra/workloads/netscaler/terraform
         run: |
           tflint --init || true
           tflint || true
@@ -55,10 +55,10 @@ jobs:
       - name: tfsec Scan (NetScaler)
         uses: aquasecurity/tfsec-action@v1
         with:
-          directory: ./netscaler/terraform
+          directory: ./infra/workloads/netscaler/terraform
 
       - name: Terraform Validate (NetScaler)
-        working-directory: ./netscaler/terraform
+        working-directory: ./infra/workloads/netscaler/terraform
         run: |
           terraform init -backend=false
           terraform validate

@@ -45,12 +45,12 @@ jobs:
         run: |
           set -euo pipefail
           if [ "${{ inputs.component }}" = "citrix" ]; then
-            cd citrix/terraform
+            cd infra/workloads/citrix/terraform
             terraform fmt -check -recursive
             terraform init -backend=false
             terraform plan
           else
-            cd netscaler/terraform
+            cd infra/workloads/netscaler/terraform
             terraform fmt -check -recursive
             terraform init
             terraform plan -var-file=clickops.tfvars

@@ -15,14 +15,14 @@ jobs:
       - uses: hashicorp/setup-terraform@v3
 
       - name: Validate (Citrix)
-        working-directory: citrix/terraform
+        working-directory: infra/workloads/citrix/terraform
         run: |
           terraform init -backend=false
           terraform fmt -check -recursive
           terraform validate
 
       - name: Validate (NetScaler)
-        working-directory: netscaler/terraform
+        working-directory: infra/workloads/netscaler/terraform
         run: |
           terraform init -backend=false
           terraform fmt -check -recursive
