@@ -1,0 +1,8 @@
+resource_group_name = "rg-clickops-gitops-foundation-prod"
+location            = "eastus2"
+
+enable_network_hub       = false
+enable_storage_fileshare = false
+enable_keyvault          = false
+enable_identity_entra    = false
+enable_adm_agent         = false

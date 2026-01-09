@@ -159,7 +159,7 @@ resource "azurerm_linux_virtual_machine" "terraform-ubuntu-machine" {
 
   admin_ssh_key {
     username   = var.ubuntu_admin_user
-    public_key = file(var.ssh_public_key_file)
+    public_key = var.ssh_public_key
   }
 
   os_disk {
@@ -279,7 +279,7 @@ resource "azurerm_virtual_machine" "terraform-primary-adc-machine" {
   os_profile_linux_config {
     disable_password_authentication = false
     ssh_keys {
-      key_data = file(var.ssh_public_key_file)
+      key_data = var.ssh_public_key
       path     = format("/home/%v/.ssh/authorized_keys", var.adc_admin_username)
     }
   }
@@ -324,7 +324,7 @@ resource "azurerm_virtual_machine" "terraform-secondary-adc-machine" {
 
   network_interface_ids = [
     azurerm_network_interface.terraform-adc-management-interface[1].id,
-    azurerm_network_interface.terraform-adc-client-interface[1].id, 
+    azurerm_network_interface.terraform-adc-client-interface[1].id,
     azurerm_network_interface.terraform-adc-server-interface[1].id,
   ]
 
@@ -359,7 +359,7 @@ resource "azurerm_virtual_machine" "terraform-secondary-adc-machine" {
   os_profile_linux_config {
     disable_password_authentication = false
     ssh_keys {
-      key_data = file(var.ssh_public_key_file)
+      key_data = var.ssh_public_key
       path     = format("/home/%v/.ssh/authorized_keys", var.adc_admin_username)
     }
   }

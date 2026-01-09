@@ -1,0 +1,9 @@
+resource_group_name = "rg-clickops-gitops-foundation-demo"
+location            = "eastus2"
+
+# Enable only what you are actively demoing:
+enable_network_hub       = false
+enable_storage_fileshare = false
+enable_keyvault          = false
+enable_identity_entra    = false
+enable_adm_agent         = false

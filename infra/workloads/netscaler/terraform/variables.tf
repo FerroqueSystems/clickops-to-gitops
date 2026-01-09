@@ -29,19 +29,19 @@ variable "adc_admin_username" {
 }
 
 variable "adc_admin_password" {
-  type      = string
-  sensitive = true
+  type        = string
+  sensitive   = true
   description = "Password for the Citrix ADC admin user. Must be sufficiently complex to pass azurerm provider checks."
 }
 variable "citrixadc_rpc_node_password" {
   description = "The new ADC RPC node password that will replace the default one on both ADC instances. [Learn More about RPCNode](https://docs.citrix.com/en-us/citrix-adc/current-release/getting-started-with-citrix-adc/change-rpc-node-password.html)"
-  type      = string
-  sensitive = true
+  type        = string
+  sensitive   = true
 }
 
-variable "ssh_public_key_file" {
-  description = "Public key file for accessing the ubuntu bastion machine."
-  default     = "~/.ssh/id_ed25519_pub.cer"
+variable "ssh_public_key" {
+  description = "SSH public key content for accessing the Ubuntu bastion and ADC VMs."
+  type        = string
 }
 
 variable "ubuntu_vm_size" {
