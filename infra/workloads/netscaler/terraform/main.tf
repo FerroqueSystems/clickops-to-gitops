@@ -375,8 +375,8 @@ resource "azurerm_virtual_machine" "terraform-secondary-adc-machine" {
 
   storage_image_reference {
     publisher = "citrix"
-    offer     = "netscalervpx-130"
-    sku       = "netscalervpxexpress"
+    offer     = "netscalervpx-141"
+    sku       = "netscalervpxbyol"
     version   = "latest"
   }
 
