@@ -1,0 +1,8 @@
+// Example backend for on-prem Nutanix deployments.
+// For local state use the "local" backend. For production, consider
+// a remote backend (Terraform Cloud, Consul, or an S3-compatible store)
+terraform {
+  backend "local" {
+    path = "terraform.tfstate"
+  }
+}

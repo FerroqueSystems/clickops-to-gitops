@@ -23,6 +23,10 @@ It is designed as a **teaching repo** – not production-ready code – to show 
 - `pipelines/github-actions/` – Sample CI/CD pipeline definitions  
 - `scripts/` – Misc helper scripts (PowerShell, Python)
 
+- `infra/nutanix/terraform/` – (NEW) Nutanix on-prem Terraform skeleton
+    for initial on-prem development. Azure examples remain in-place; pick
+    the appropriate folder and backend when running Terraform.
+
 ---
 
 ## Getting Started

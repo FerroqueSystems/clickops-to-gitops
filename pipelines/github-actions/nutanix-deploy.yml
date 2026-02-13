@@ -1,0 +1,43 @@
+name: Nutanix Terraform Deploy (skeleton)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy to Nutanix (on-prem)
+    runs-on: [self-hosted, linux, nutanix]
+    env:
+      TF_VAR_prism_endpoint: ${{ secrets.NUTANIX_PRISM_ENDPOINT }}
+      TF_VAR_prism_username: ${{ secrets.NUTANIX_PRISM_USERNAME }}
+      TF_VAR_prism_password: ${{ secrets.NUTANIX_PRISM_PASSWORD }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: "1.5.0"
+
+      - name: Terraform Init
+        working-directory: infra/nutanix/terraform
+        run: |
+          terraform init
+
+      - name: Terraform Validate
+        working-directory: infra/nutanix/terraform
+        run: |
+          terraform validate || true
+
+      # For safety: run plan and require manual apply
+      - name: Terraform Plan
+        working-directory: infra/nutanix/terraform
+        run: |
+          terraform plan -out=tfplan
+
+      # Uncomment the apply step only when you are ready to auto-apply
+      # - name: Terraform Apply
+      #   working-directory: infra/nutanix/terraform
+      #   run: |
+      #     terraform apply -auto-approve tfplan

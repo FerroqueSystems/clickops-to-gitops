@@ -1,0 +1,5 @@
+// Example terraform.tfvars for infra/nutanix/terraform
+prism_endpoint = "https://PRISM_IP:9440"
+prism_username = "your-user"
+prism_password = "your-password"
+cluster_uuid   = ""
