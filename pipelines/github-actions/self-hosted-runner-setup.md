@@ -37,6 +37,17 @@ sudo ./svc.sh install
 sudo ./svc.sh start
 ```
 
+**Automated bootstrap (recommended):** Use the provided `bootstrap-runner.sh` script
+to automate token fetching and setup. It requires a GitHub PAT with repo scope.
+
+```bash
+# Copy the script to your Linux host
+scp pipelines/github-actions/bootstrap-runner.sh user@linux-host:/tmp/
+
+# Run it (replace with your values)
+ssh user@linux-host "chmod +x /tmp/bootstrap-runner.sh && /tmp/bootstrap-runner.sh <owner> <repo> <pat> [version]"
+```
+
 3. Automating registration (optional)
 
 - To provision runners automatically, use the GitHub REST API to create a
