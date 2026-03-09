@@ -3,6 +3,12 @@ variable "resource_group_name" {
   default     = "terraform-resource-group"
 }
 
+variable "tags" {
+  description = "Tags to apply to created resources. Used for cost allocation, governance, and tracking."
+  type        = map(string)
+  default     = {}
+}
+
 variable "location" {
   description = "Azure location where all resources will be created"
 }

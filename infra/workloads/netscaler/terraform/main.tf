@@ -1,6 +1,8 @@
 resource "azurerm_resource_group" "terraform-resource-group" {
   name     = var.resource_group_name
   location = var.location
+
+  tags = var.tags
 }
 resource "azurerm_virtual_network" "terraform-virtual-network" {
   name                = "terraform-virtual-network"
