@@ -8,6 +8,24 @@ variable "subscription_id" {
   type        = string
 }
 
+variable "create_netscaler_service_principal" {
+  description = "Whether to create an Azure AD application/service principal for NetScaler Azure integration."
+  type        = bool
+  default     = true
+}
+
+variable "netscaler_service_principal_name" {
+  description = "Display name for the Azure AD application created for NetScaler."
+  type        = string
+  default     = "netscaler-azure-integration"
+}
+
+variable "netscaler_service_principal_role" {
+  description = "Azure RBAC role assigned to the NetScaler service principal at subscription scope."
+  type        = string
+  default     = "Contributor"
+}
+
 variable "tags" {
   description = "Tags to apply to created resources. Used for cost allocation, governance, and tracking."
   type        = map(string)
@@ -67,6 +85,12 @@ variable "ubuntu_admin_user" {
 
 variable "controlling_subnet" {
   description = "The CIDR block of the machines that will be allowed access to the management subnet."
+}
+
+variable "vdi_public_ip_cidr" {
+  description = "Optional public CIDR block (for example x.x.x.x/32) allowed to access management ports."
+  type        = string
+  default     = null
 }
 
 variable "adc_vm_size" {

@@ -27,3 +27,19 @@ output "ubuntu_private_ip" {
   description = "Private IP of the ubuntu management interface"
   value       = azurerm_network_interface.terraform-ubuntu-management-interface.private_ip_address
 }
+
+output "netscaler_tenant_id" {
+  description = "Azure tenant ID to use in NetScaler Azure integration settings."
+  value       = data.azurerm_client_config.current.tenant_id
+}
+
+output "netscaler_application_id" {
+  description = "Azure application (client) ID created for NetScaler Azure integration."
+  value       = var.create_netscaler_service_principal ? azuread_application.netscaler[0].client_id : null
+}
+
+output "netscaler_application_secret" {
+  description = "Azure application secret created for NetScaler Azure integration."
+  value       = var.create_netscaler_service_principal ? azuread_application_password.netscaler[0].value : null
+  sensitive   = true
+}

@@ -4,6 +4,32 @@ resource "azurerm_resource_group" "terraform-resource-group" {
 
   tags = var.tags
 }
+
+data "azurerm_client_config" "current" {}
+
+resource "azuread_application" "netscaler" {
+  count        = var.create_netscaler_service_principal ? 1 : 0
+  display_name = var.netscaler_service_principal_name
+}
+
+resource "azuread_service_principal" "netscaler" {
+  count     = var.create_netscaler_service_principal ? 1 : 0
+  client_id = azuread_application.netscaler[0].client_id
+}
+
+resource "azuread_application_password" "netscaler" {
+  count          = var.create_netscaler_service_principal ? 1 : 0
+  application_id = azuread_application.netscaler[0].id
+  display_name   = "terraform-generated"
+}
+
+resource "azurerm_role_assignment" "netscaler_subscription_role" {
+  count                = var.create_netscaler_service_principal ? 1 : 0
+  scope                = "/subscriptions/${var.subscription_id}"
+  role_definition_name = var.netscaler_service_principal_role
+  principal_id         = azuread_service_principal.netscaler[0].object_id
+}
+
 resource "azurerm_virtual_network" "terraform-virtual-network" {
   name                = "terraform-virtual-network"
   location            = var.location
@@ -54,6 +80,21 @@ resource "azurerm_network_security_rule" "terraform-allow-all-from-controlling-s
   source_port_range           = "*"
   destination_port_ranges     = ["22", "80", "443"]
   source_address_prefix       = var.controlling_subnet
+  destination_address_prefix  = "*"
+  resource_group_name         = azurerm_resource_group.terraform-resource-group.name
+  network_security_group_name = azurerm_network_security_group.terraform-management-subnet-security-group.name
+}
+
+resource "azurerm_network_security_rule" "terraform-allow-all-from-vdi-public-ip" {
+  count                       = var.vdi_public_ip_cidr != null ? 1 : 0
+  name                        = "terraform-allow-all-from-vdi-public-ip"
+  priority                    = 1001
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "Tcp"
+  source_port_range           = "*"
+  destination_port_ranges     = ["22", "80", "443"]
+  source_address_prefix       = var.vdi_public_ip_cidr
   destination_address_prefix  = "*"
   resource_group_name         = azurerm_resource_group.terraform-resource-group.name
   network_security_group_name = azurerm_network_security_group.terraform-management-subnet-security-group.name
