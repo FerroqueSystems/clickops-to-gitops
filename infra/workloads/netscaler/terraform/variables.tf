@@ -78,3 +78,21 @@ variable "ha_for_internal_lb" {
   description = "Whether to use HA for the internal load balancer."
   default     = false
 }
+
+variable "auto_shutdown_enabled" {
+  description = "Whether to enable daily auto-shutdown for lab VMs."
+  type        = bool
+  default     = true
+}
+
+variable "auto_shutdown_time" {
+  description = "Daily auto-shutdown time in HHMM 24-hour format."
+  type        = string
+  default     = "1800"
+}
+
+variable "auto_shutdown_timezone" {
+  description = "Windows time zone ID used by Azure for auto-shutdown scheduling."
+  type        = string
+  default     = "Eastern Standard Time"
+}

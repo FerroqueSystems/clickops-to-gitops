@@ -298,12 +298,12 @@ resource "azurerm_virtual_machine" "terraform-primary-adc-machine" {
   storage_image_reference {
     publisher = "citrix"
     offer     = "netscalervpx-141"
-    sku       = "netscalervpxbyol"
+    sku       = "netscalerbyol"
     version   = "latest"
   }
 
   plan {
-    name      = "netscalervpxbyol"
+    name      = "netscalerbyol"
     publisher = "citrix"
     product   = "netscalervpx-141"
   }
@@ -378,12 +378,12 @@ resource "azurerm_virtual_machine" "terraform-secondary-adc-machine" {
   storage_image_reference {
     publisher = "citrix"
     offer     = "netscalervpx-141"
-    sku       = "netscalervpxbyol"
+    sku       = "netscalerbyol"
     version   = "latest"
   }
 
   plan {
-    name      = "netscalervpxbyol"
+    name      = "netscalerbyol"
     publisher = "citrix"
     product   = "netscalervpx-141"
   }
@@ -395,6 +395,42 @@ resource "azurerm_virtual_machine" "terraform-secondary-adc-machine" {
     azurerm_network_interface_backend_address_pool_association.tf_assoc,
     azurerm_virtual_machine.terraform-primary-adc-machine,
   ]
+}
+
+resource "azurerm_dev_test_global_vm_shutdown_schedule" "terraform-ubuntu-shutdown-schedule" {
+  virtual_machine_id    = azurerm_linux_virtual_machine.terraform-ubuntu-machine.id
+  location              = var.location
+  enabled               = var.auto_shutdown_enabled
+  daily_recurrence_time = var.auto_shutdown_time
+  timezone              = var.auto_shutdown_timezone
+
+  notification_settings {
+    enabled = false
+  }
+}
+
+resource "azurerm_dev_test_global_vm_shutdown_schedule" "terraform-primary-adc-shutdown-schedule" {
+  virtual_machine_id    = azurerm_virtual_machine.terraform-primary-adc-machine.id
+  location              = var.location
+  enabled               = var.auto_shutdown_enabled
+  daily_recurrence_time = var.auto_shutdown_time
+  timezone              = var.auto_shutdown_timezone
+
+  notification_settings {
+    enabled = false
+  }
+}
+
+resource "azurerm_dev_test_global_vm_shutdown_schedule" "terraform-secondary-adc-shutdown-schedule" {
+  virtual_machine_id    = azurerm_virtual_machine.terraform-secondary-adc-machine.id
+  location              = var.location
+  enabled               = var.auto_shutdown_enabled
+  daily_recurrence_time = var.auto_shutdown_time
+  timezone              = var.auto_shutdown_timezone
+
+  notification_settings {
+    enabled = false
+  }
 }
 
 
