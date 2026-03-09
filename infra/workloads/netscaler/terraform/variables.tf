@@ -3,6 +3,11 @@ variable "resource_group_name" {
   default     = "terraform-resource-group"
 }
 
+variable "subscription_id" {
+  description = "Azure subscription ID where resources will be deployed."
+  type        = string
+}
+
 variable "tags" {
   description = "Tags to apply to created resources. Used for cost allocation, governance, and tracking."
   type        = map(string)
