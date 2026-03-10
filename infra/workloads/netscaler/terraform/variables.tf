@@ -8,24 +8,6 @@ variable "subscription_id" {
   type        = string
 }
 
-variable "create_netscaler_service_principal" {
-  description = "Whether to create an Azure AD application/service principal for NetScaler Azure integration."
-  type        = bool
-  default     = true
-}
-
-variable "netscaler_service_principal_name" {
-  description = "Display name for the Azure AD application created for NetScaler."
-  type        = string
-  default     = "netscaler-azure-integration"
-}
-
-variable "netscaler_service_principal_role" {
-  description = "Azure RBAC role assigned to the NetScaler service principal at subscription scope."
-  type        = string
-  default     = "Contributor"
-}
-
 variable "tags" {
   description = "Tags to apply to created resources. Used for cost allocation, governance, and tracking."
   type        = map(string)
@@ -119,4 +101,90 @@ variable "auto_shutdown_timezone" {
   description = "Windows time zone ID used by Azure for auto-shutdown scheduling."
   type        = string
   default     = "Eastern Standard Time"
+}
+
+variable "enable_netscaler_agent" {
+  description = "Whether to deploy a NetScaler Agent VM."
+  type        = bool
+  default     = false
+}
+
+variable "netscaler_agent_name" {
+  description = "Name of the NetScaler Agent VM."
+  type        = string
+  default     = "terraform-netscaler-agent"
+}
+
+variable "netscaler_agent_vm_size" {
+  description = "Azure VM size for NetScaler Agent."
+  type        = string
+  default     = "Standard_D2s_v3"
+}
+
+variable "netscaler_agent_admin_username" {
+  description = "Admin username for the NetScaler Agent VM."
+  type        = string
+  default     = "nsrecover"
+}
+
+variable "netscaler_agent_admin_password" {
+  description = "Admin password for the NetScaler Agent VM."
+  type        = string
+  sensitive   = true
+  default     = null
+}
+
+variable "netscaler_agent_image_publisher" {
+  description = "Marketplace image publisher for NetScaler Agent."
+  type        = string
+  default     = "citrix"
+}
+
+variable "netscaler_agent_image_offer" {
+  description = "Marketplace image offer for NetScaler Agent."
+  type        = string
+  default     = null
+}
+
+variable "netscaler_agent_image_sku" {
+  description = "Marketplace image SKU for NetScaler Agent."
+  type        = string
+  default     = null
+}
+
+variable "netscaler_agent_image_version" {
+  description = "Marketplace image version for NetScaler Agent."
+  type        = string
+  default     = "latest"
+}
+
+variable "netscaler_agent_plan_name" {
+  description = "Marketplace plan name for NetScaler Agent. If null, defaults to image SKU."
+  type        = string
+  default     = null
+}
+
+variable "netscaler_agent_plan_product" {
+  description = "Marketplace plan product for NetScaler Agent. If null, defaults to image offer."
+  type        = string
+  default     = null
+}
+
+variable "netscaler_agent_auto_register" {
+  description = "Whether to auto-register NetScaler Agent to NetScaler Console Service using custom data."
+  type        = bool
+  default     = true
+}
+
+variable "netscaler_console_service_url" {
+  description = "NetScaler Console Service URL used by registeragent."
+  type        = string
+  default     = null
+}
+
+variable "netscaler_console_activation_code" {
+  description = "NetScaler Console Service activation code used by registeragent."
+  type        = string
+  sensitive   = true
+  default     = null
 }

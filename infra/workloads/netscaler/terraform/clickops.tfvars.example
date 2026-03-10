@@ -1,3 +1,14 @@
+enable_netscaler_agent              = false
+netscaler_agent_name                = "terraform-netscaler-agent"
+netscaler_agent_vm_size             = "Standard_D2s_v3"
+netscaler_agent_image_offer         = null
+netscaler_agent_image_sku           = null
+netscaler_agent_image_version       = "latest"
+netscaler_agent_auto_register       = true
+# TF_VAR_netscaler_agent_admin_password
+# TF_VAR_netscaler_console_service_url
+# TF_VAR_netscaler_console_activation_code
+
 virtual_network_address_space         = "10.45.0.0/16"
 management_subnet_address_prefix      = "10.45.1.0/24"
 client_subnet_address_prefix          = "10.45.2.0/24"
