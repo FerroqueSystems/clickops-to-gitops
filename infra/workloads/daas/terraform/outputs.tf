@@ -1,0 +1,51 @@
+output "shared_infra" {
+  description = "Shared Azure infrastructure read from the existing NetScaler resource group and VNet."
+  value = {
+    resource_group_name = data.azurerm_resource_group.shared.name
+    location            = data.azurerm_resource_group.shared.location
+    virtual_network     = data.azurerm_virtual_network.shared.name
+    subnet_names        = local.subnet_names_by_role
+    subnet_ids          = local.subnet_ids_by_role
+  }
+}
+
+output "resource_location_plan" {
+  description = "Starter plan object for the Citrix resource location."
+  value       = local.resource_location_plan
+}
+
+output "hosting_connection_plan" {
+  description = "Starter plan object for the Citrix Azure hosting connection."
+  value       = local.hosting_connection_plan
+}
+
+output "cloud_connectors_plan" {
+  description = "Starter plan for the static Cloud Connector layer."
+  value       = module.cloud_connectors.plan
+}
+
+output "machine_catalogs_plan" {
+  description = "Starter plan for the rotating machine catalog layer."
+  value = {
+    for name, module_ref in module.machine_catalogs :
+    name => module_ref.plan
+  }
+}
+
+output "delivery_groups_plan" {
+  description = "Starter plan for stable delivery groups that can point to a new catalog generation."
+  value = {
+    for name, module_ref in module.delivery_groups :
+    name => module_ref.plan
+  }
+}
+
+output "monthly_rebuild_pattern" {
+  description = "Summary of the intended monthly rebuild split between static and rotating components."
+  value = {
+    static_layers   = ["resource_location", "hosting_connection", "cloud_connectors"]
+    rotating_layers = ["machine_catalogs"]
+    cutover_layers  = ["delivery_groups"]
+    generation      = var.catalog_generation
+  }
+}

@@ -1,0 +1,43 @@
+subscription_id           = "0cb554f1-e4b4-4246-8604-b050e5dec014"
+environment_name          = "demo"
+catalog_generation        = "2026-03"
+shared_resource_group_name = "rg-clickops-gitops-demo"
+shared_virtual_network_name = "terraform-virtual-network"
+management_subnet_name    = "terraform-management-subnet"
+server_subnet_name        = "terraform-server-subnet"
+client_subnet_name        = "terraform-client-subnet"
+
+resource_location_name    = "demo-canadacentral"
+hosting_connection_name   = "demo-canadacentral-shared"
+
+cloud_connector_count      = 2
+cloud_connector_name_prefix = "ctx-cc"
+cloud_connector_vm_size    = "Standard_D4s_v5"
+cloud_connector_subnet_role = "management"
+
+machine_catalogs = {
+  win11-pooled = {
+    subnet_role           = "server"
+    session_type          = "single_session"
+    image_definition_name = "win11-23h2-cvad"
+    machine_count         = 10
+    vm_size               = "Standard_D4s_v5"
+    delivery_group_name   = "dg-win11-pooled"
+  }
+  ws2022-apps = {
+    subnet_role           = "server"
+    session_type          = "multi_session"
+    image_definition_name = "ws2022-cvad-apps"
+    machine_count         = 6
+    vm_size               = "Standard_D8s_v5"
+    delivery_group_name   = "dg-published-apps"
+  }
+}
+
+tags = {
+  Environment = "demo"
+  Purpose     = "citrix-daas-monthly-rebuild"
+  Lifecycle   = "mixed"
+}
+
+# Review the current management and server subnet NSGs before deploying Cloud Connectors or VDAs.
