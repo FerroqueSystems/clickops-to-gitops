@@ -29,11 +29,21 @@ output "ubuntu_private_ip" {
 }
 
 output "netscaler_agent_public_ip" {
-  description = "Public IP of the NetScaler Agent VM (null when disabled)."
+  description = "Public IP of the NetScaler Console Agent VM (null when disabled)."
   value       = var.enable_netscaler_agent ? azurerm_public_ip.netscaler_agent_public_ip[0].ip_address : null
 }
 
 output "netscaler_agent_private_ip" {
-  description = "Private IP of the NetScaler Agent VM management NIC (null when disabled)."
+  description = "Private IP of the NetScaler Console Agent VM management NIC (null when disabled)."
+  value       = var.enable_netscaler_agent ? azurerm_network_interface.netscaler_agent_management_interface[0].private_ip_address : null
+}
+
+output "netscaler_console_agent_public_ip" {
+  description = "Alias for the NetScaler Console Agent public IP output."
+  value       = var.enable_netscaler_agent ? azurerm_public_ip.netscaler_agent_public_ip[0].ip_address : null
+}
+
+output "netscaler_console_agent_private_ip" {
+  description = "Alias for the NetScaler Console Agent private IP output."
   value       = var.enable_netscaler_agent ? azurerm_network_interface.netscaler_agent_management_interface[0].private_ip_address : null
 }

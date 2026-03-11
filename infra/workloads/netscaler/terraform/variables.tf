@@ -104,50 +104,55 @@ variable "auto_shutdown_timezone" {
 }
 
 variable "enable_netscaler_agent" {
-  description = "Whether to deploy a NetScaler Agent VM."
+  description = "Whether to deploy a NetScaler Console Agent VM."
   type        = bool
   default     = false
 }
 
 variable "netscaler_agent_name" {
-  description = "Name of the NetScaler Agent VM."
+  description = "Name of the NetScaler Console Agent VM."
   type        = string
   default     = "terraform-netscaler-agent"
 }
 
 variable "netscaler_agent_vm_size" {
-  description = "Azure VM size for NetScaler Agent."
+  description = "Azure VM size for NetScaler Console Agent."
   type        = string
   default     = "Standard_D2s_v3"
 }
 
 variable "netscaler_agent_admin_username" {
-  description = "Admin username for the NetScaler Agent VM."
+  description = "Provisioning username for the NetScaler Console Agent VM. Do not use reserved appliance usernames such as nsroot or nsrecover."
   type        = string
-  default     = "nsrecover"
+  default     = "agentadmin"
+
+  validation {
+    condition     = !contains(["nsroot", "nsrecover"], lower(var.netscaler_agent_admin_username))
+    error_message = "netscaler_agent_admin_username must not be nsroot or nsrecover."
+  }
 }
 
 variable "netscaler_agent_admin_password" {
-  description = "Admin password for the NetScaler Agent VM."
+  description = "Provisioning password for the NetScaler Console Agent VM."
   type        = string
   sensitive   = true
   default     = null
 }
 
 variable "netscaler_agent_image_publisher" {
-  description = "Marketplace image publisher for NetScaler Agent."
+  description = "Marketplace image publisher for NetScaler Console Agent."
   type        = string
   default     = "citrix"
 }
 
 variable "netscaler_agent_image_offer" {
-  description = "Marketplace image offer for NetScaler Agent."
+  description = "Marketplace image offer for NetScaler Console Agent."
   type        = string
   default     = null
 }
 
 variable "netscaler_agent_image_sku" {
-  description = "Marketplace image SKU for NetScaler Agent."
+  description = "Marketplace image SKU for NetScaler Console Agent."
   type        = string
   default     = null
 }
@@ -159,31 +164,31 @@ variable "netscaler_agent_image_version" {
 }
 
 variable "netscaler_agent_plan_name" {
-  description = "Marketplace plan name for NetScaler Agent. If null, defaults to image SKU."
+  description = "Marketplace plan name for NetScaler Console Agent. If null, defaults to image SKU."
   type        = string
   default     = null
 }
 
 variable "netscaler_agent_plan_product" {
-  description = "Marketplace plan product for NetScaler Agent. If null, defaults to image offer."
+  description = "Marketplace plan product for NetScaler Console Agent. If null, defaults to image offer."
   type        = string
   default     = null
 }
 
 variable "netscaler_agent_auto_register" {
-  description = "Whether to auto-register NetScaler Agent to NetScaler Console Service using custom data."
+  description = "Whether to auto-register NetScaler Console Agent to NetScaler Console using custom data."
   type        = bool
   default     = true
 }
 
 variable "netscaler_console_service_url" {
-  description = "NetScaler Console Service URL used by registeragent."
+  description = "NetScaler Console service URL used by registeragent."
   type        = string
   default     = null
 }
 
 variable "netscaler_console_activation_code" {
-  description = "NetScaler Console Service activation code used by registeragent."
+  description = "NetScaler Console activation code used by registeragent."
   type        = string
   sensitive   = true
   default     = null

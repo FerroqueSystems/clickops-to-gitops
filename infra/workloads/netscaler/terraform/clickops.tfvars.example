@@ -1,10 +1,14 @@
+# NetScaler Console Agent
 enable_netscaler_agent              = false
 netscaler_agent_name                = "terraform-netscaler-agent"
+netscaler_agent_admin_username      = "agentadmin"
 netscaler_agent_vm_size             = "Standard_D2s_v3"
 netscaler_agent_image_offer         = null
 netscaler_agent_image_sku           = null
 netscaler_agent_image_version       = "latest"
 netscaler_agent_auto_register       = true
+# Set the exact marketplace offer/sku for NetScaler Console Agent in your subscription/region.
+# Do not use nsroot or nsrecover as netscaler_agent_admin_username.
 # TF_VAR_netscaler_agent_admin_password
 # TF_VAR_netscaler_console_service_url
 # TF_VAR_netscaler_console_activation_code
