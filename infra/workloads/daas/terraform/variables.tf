@@ -3,6 +3,12 @@ variable "subscription_id" {
   type        = string
 }
 
+variable "location" {
+  description = "Azure region for DaaS resources."
+  type        = string
+  default     = "Canada Central"
+}
+
 variable "environment_name" {
   description = "Short environment label used in generated names."
   type        = string
