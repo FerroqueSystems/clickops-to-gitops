@@ -23,10 +23,9 @@ jobs:
           tenant-id: ${{ secrets.ARM_TENANT_ID }}
           subscription-id: ${{ secrets.ARM_SUBSCRIPTION_ID }}
 
-      - name: Terraform Init & Apply (Citrix)
-        working-directory: ./infra/workloads/citrix/terraform
+      - name: Terraform Init & Apply (DaaS)
+        working-directory: ./infra/workloads/daas/terraform
         env:
-          TF_VAR_netscaler_password: ${{ secrets.NETSCALER_PASSWORD }}
           ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
           ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
           ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
@@ -39,7 +38,11 @@ jobs:
       - name: Terraform Init & Apply (NetScaler)
         working-directory: ./infra/workloads/netscaler/terraform
         env:
-          TF_VAR_netscaler_password: ${{ secrets.NETSCALER_PASSWORD }}
+          TF_VAR_adc_admin_password: ${{ secrets.ADC_ADMIN_PASSWORD }}
+          TF_VAR_citrixadc_rpc_node_password: ${{ secrets.CITRIXADC_RPC_NODE_PASSWORD }}
+          TF_VAR_netscaler_agent_admin_password: ${{ secrets.NETSCALER_AGENT_ADMIN_PASSWORD }}
+          TF_VAR_netscaler_console_service_url: ${{ secrets.NETSCALER_CONSOLE_SERVICE_URL }}
+          TF_VAR_netscaler_console_activation_code: ${{ secrets.NETSCALER_CONSOLE_ACTIVATION_CODE }}
           ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
           ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
           ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}

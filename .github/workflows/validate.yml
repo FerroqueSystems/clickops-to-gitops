@@ -15,8 +15,8 @@ jobs:
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
 
-      - name: Terraform Validate (Citrix)
-        working-directory: ./infra/workloads/citrix/terraform
+      - name: Terraform Validate (DaaS)
+        working-directory: ./infra/workloads/daas/terraform
         run: |
           terraform init -backend=false
           terraform validate

@@ -7,6 +7,7 @@ netscaler_agent_image_offer         = null
 netscaler_agent_image_sku           = null
 netscaler_agent_image_version       = "latest"
 netscaler_agent_auto_register       = true
+# Set enable_netscaler_agent = true to deploy the NetScaler Console Agent with the stack.
 # Set the exact marketplace offer/sku for NetScaler Console Agent in your subscription/region.
 # Do not use nsroot or nsrecover as netscaler_agent_admin_username.
 # TF_VAR_netscaler_agent_admin_password

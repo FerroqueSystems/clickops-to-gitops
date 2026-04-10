@@ -11,7 +11,12 @@ resource "azurerm_marketplace_agreement" "netscaler_agent_marketplace_agreement"
 
   lifecycle {
     precondition {
-      condition     = var.netscaler_agent_image_offer != null && var.netscaler_agent_image_sku != null
+      condition = (
+        var.netscaler_agent_image_offer != null &&
+        trimspace(var.netscaler_agent_image_offer) != "" &&
+        var.netscaler_agent_image_sku != null &&
+        trimspace(var.netscaler_agent_image_sku) != ""
+      )
       error_message = "Set netscaler_agent_image_offer and netscaler_agent_image_sku when enable_netscaler_agent is true."
     }
   }
@@ -79,11 +84,21 @@ resource "azurerm_linux_virtual_machine" "netscaler_agent_machine" {
 
   lifecycle {
     precondition {
-      condition     = var.netscaler_agent_admin_password != null
+      condition = (
+        var.netscaler_agent_admin_password != null &&
+        trimspace(var.netscaler_agent_admin_password) != ""
+      )
       error_message = "Set netscaler_agent_admin_password when enable_netscaler_agent is true."
     }
     precondition {
-      condition     = !var.netscaler_agent_auto_register || (var.netscaler_console_service_url != null && var.netscaler_console_activation_code != null)
+      condition = (
+        !var.netscaler_agent_auto_register || (
+          var.netscaler_console_service_url != null &&
+          trimspace(var.netscaler_console_service_url) != "" &&
+          var.netscaler_console_activation_code != null &&
+          trimspace(var.netscaler_console_activation_code) != ""
+        )
+      )
       error_message = "Set netscaler_console_service_url and netscaler_console_activation_code when netscaler_agent_auto_register is true."
     }
   }

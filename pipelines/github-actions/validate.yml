@@ -15,8 +15,8 @@ jobs:
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
 
-      - name: Terraform Format Check (Citrix)
-        working-directory: ./infra/workloads/citrix/terraform
+      - name: Terraform Format Check (DaaS)
+        working-directory: ./infra/workloads/daas/terraform
         run: |
           terraform fmt -check -diff
 
@@ -24,19 +24,19 @@ jobs:
         run: |
           curl -sSfL https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
 
-      - name: TFLint Init & Run (Citrix)
-        working-directory: ./infra/workloads/citrix/terraform
+      - name: TFLint Init & Run (DaaS)
+        working-directory: ./infra/workloads/daas/terraform
         run: |
           tflint --init || true
           tflint || true
 
-      - name: tfsec Scan (Citrix)
+      - name: tfsec Scan (DaaS)
         uses: aquasecurity/tfsec-action@v1
         with:
-          directory: ./infra/workloads/citrix/terraform
+          directory: ./infra/workloads/daas/terraform
 
-      - name: Terraform Validate (Citrix)
-        working-directory: ./infra/workloads/citrix/terraform
+      - name: Terraform Validate (DaaS)
+        working-directory: ./infra/workloads/daas/terraform
         run: |
           terraform init -backend=false
           terraform validate

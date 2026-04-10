@@ -14,8 +14,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: hashicorp/setup-terraform@v3
 
-      - name: Validate (Citrix)
-        working-directory: infra/workloads/citrix/terraform
+      - name: Validate (DaaS)
+        working-directory: infra/workloads/daas/terraform
         run: |
           terraform init -backend=false
           terraform fmt -check -recursive

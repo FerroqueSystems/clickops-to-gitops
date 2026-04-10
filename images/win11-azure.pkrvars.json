@@ -1,0 +1,6 @@
+{
+  "azure_imgpublisher": "MicrosoftWindowsDesktop",
+  "azure_imgoffer": "windows-11",
+  "azure_imgsku": "win11-25h2-pro",
+  "azure_imgversion": "26200.8037.260306"
+}

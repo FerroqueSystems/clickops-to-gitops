@@ -8,7 +8,7 @@ on:
         required: true
         type: choice
         options:
-          - citrix
+          - daas
           - netscaler
 
 permissions:
@@ -38,14 +38,16 @@ jobs:
           ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
           ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
           # 🔐 Add secrets here (TF_VAR_<terraform variable name>)
-          TF_VAR_adc_admin_username: ${{ secrets.ADC_ADMIN_USERNAME }}
           TF_VAR_adc_admin_password: ${{ secrets.ADC_ADMIN_PASSWORD }}
           TF_VAR_citrixadc_rpc_node_password: ${{ secrets.CITRIXADC_RPC_NODE_PASSWORD }}
+          TF_VAR_netscaler_agent_admin_password: ${{ secrets.NETSCALER_AGENT_ADMIN_PASSWORD }}
+          TF_VAR_netscaler_console_service_url: ${{ secrets.NETSCALER_CONSOLE_SERVICE_URL }}
+          TF_VAR_netscaler_console_activation_code: ${{ secrets.NETSCALER_CONSOLE_ACTIVATION_CODE }}
 
         run: |
           set -euo pipefail
-          if [ "${{ inputs.component }}" = "citrix" ]; then
-            cd infra/workloads/citrix/terraform
+          if [ "${{ inputs.component }}" = "daas" ]; then
+            cd infra/workloads/daas/terraform
             terraform fmt -check -recursive
             terraform init -backend=false
             terraform plan
@@ -55,7 +57,3 @@ jobs:
             terraform init
             terraform plan -var-file=clickops.tfvars
           fi
-
-          terraform fmt -check -recursive
-          terraform init
-          terraform plan
