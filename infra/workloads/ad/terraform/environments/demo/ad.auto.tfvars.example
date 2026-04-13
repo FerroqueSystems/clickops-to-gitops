@@ -1,0 +1,31 @@
+subscription_id               = "0cb554f1-e4b4-4246-8604-b050e5dec014"
+environment_name              = "demo"
+shared_resource_group_name    = "rg-clickops-gitops-demo"
+shared_virtual_network_name   = "terraform-virtual-network"
+management_subnet_name        = "terraform-management-subnet"
+server_subnet_name            = "terraform-server-subnet"
+client_subnet_name            = "terraform-client-subnet"
+
+domain_controller_name_prefix = "ad-dc"
+domain_controller_subnet_role = "management"
+domain_controller_vm_size     = "Standard_D4s_v5"
+domain_controller_admin_username = "localadmin"
+
+domain_controller_private_ip_addresses = [
+  "10.45.1.20",
+  "10.45.1.21",
+]
+
+domain_controller_zones = [
+  "1",
+  "2",
+]
+
+tags = {
+  Environment = "demo"
+  Purpose     = "ad-foundation"
+  Lifecycle   = "static"
+}
+
+# Secrets are provided via environment variables or GitHub Secrets:
+# TF_VAR_domain_controller_admin_password
