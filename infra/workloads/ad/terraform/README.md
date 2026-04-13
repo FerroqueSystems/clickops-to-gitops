@@ -9,6 +9,8 @@ controllers. Promotion into AD DS, DNS configuration, and database server
 automation should be handled in a follow-on step with configuration management
 or VM extensions.
 
+The planned AD DNS domain name for this demo is `clickops.demo`.
+
 ## Design Notes
 
 - Uses the existing shared Azure resource group, VNet, and subnet names.

@@ -1,0 +1,14 @@
+---
+- name: Promote first server to forest root domain controller
+  hosts: domain_forest
+  gather_facts: false
+
+  roles:
+    - domain-forest
+
+- name: Promote second server to additional domain controller
+  hosts: domain_replicas
+  gather_facts: false
+
+  roles:
+    - domain-replica

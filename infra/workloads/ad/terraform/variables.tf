@@ -9,6 +9,12 @@ variable "environment_name" {
   default     = "demo"
 }
 
+variable "domain_name" {
+  description = "Active Directory DNS domain name that these servers will be promoted into."
+  type        = string
+  default     = "clickops.demo"
+}
+
 variable "shared_resource_group_name" {
   description = "Existing Azure resource group name shared with the NetScaler deployment."
   type        = string

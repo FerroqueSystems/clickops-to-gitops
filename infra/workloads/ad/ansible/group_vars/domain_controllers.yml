@@ -1,0 +1,6 @@
+---
+ad_domain_name: clickops.demo
+ad_domain_netbios_name: CLICKOPS
+ad_safe_mode_password: REPLACE_WITH_DSRM_PASSWORD
+ad_domain_admin_password: REPLACE_WITH_DOMAIN_ADMIN_PASSWORD
+ad_install_dns: true

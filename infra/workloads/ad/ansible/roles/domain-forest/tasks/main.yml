@@ -1,0 +1,21 @@
+---
+- name: Install Active Directory Domain Services feature
+  ansible.windows.win_feature:
+    name:
+      - AD-Domain-Services
+    include_management_tools: true
+    state: present
+
+- name: Create the clickops.demo forest and first domain controller
+  microsoft.ad.domain:
+    dns_domain_name: "{{ ad_domain_name }}"
+    domain_netbios_name: "{{ ad_domain_netbios_name }}"
+    safe_mode_password: "{{ ad_safe_mode_password }}"
+    install_dns: "{{ ad_install_dns }}"
+    reboot: true
+
+- name: Wait for the first domain controller to come back
+  ansible.windows.win_reboot:
+    reboot_timeout: 3600
+    connect_timeout: 60
+    post_reboot_delay: 30

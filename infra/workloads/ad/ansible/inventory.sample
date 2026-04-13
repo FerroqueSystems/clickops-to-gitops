@@ -1,0 +1,17 @@
+[domain_controllers]
+ad-dc-demo-01 ansible_host=10.45.1.20
+ad-dc-demo-02 ansible_host=10.45.1.21
+
+[domain_controllers:vars]
+ansible_connection=winrm
+ansible_port=5986
+ansible_winrm_transport=ntlm
+ansible_winrm_server_cert_validation=ignore
+ansible_user=.\localadmin
+ansible_password=REPLACE_WITH_LOCAL_ADMIN_PASSWORD
+
+[domain_forest]
+ad-dc-demo-01
+
+[domain_replicas]
+ad-dc-demo-02

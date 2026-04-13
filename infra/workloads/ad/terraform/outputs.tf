@@ -23,3 +23,8 @@ output "domain_controller_subnet_role" {
   description = "Subnet role used for the domain controller VMs."
   value       = var.domain_controller_subnet_role
 }
+
+output "domain_name" {
+  description = "Active Directory DNS domain name planned for domain controller promotion."
+  value       = var.domain_name
+}
