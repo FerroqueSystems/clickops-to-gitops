@@ -180,6 +180,11 @@ resource "azurerm_linux_virtual_machine" "terraform-ubuntu-machine" {
     public_key = var.ssh_public_key
   }
 
+  custom_data = base64encode(templatefile("${path.module}/templates/bastion-cloud-init.yaml.tftpl", {
+    ubuntu_admin_user      = var.ubuntu_admin_user
+    bastion_repository_url = var.bastion_repository_url
+  }))
+
   os_disk {
     caching              = "ReadWrite"
     storage_account_type = "Standard_LRS"
@@ -187,8 +192,8 @@ resource "azurerm_linux_virtual_machine" "terraform-ubuntu-machine" {
 
   source_image_reference {
     publisher = "Canonical"
-    offer     = "UbuntuServer"
-    sku       = "18.04-LTS"
+    offer     = "ubuntu-24_04-lts"
+    sku       = "server"
     version   = "latest"
   }
 }

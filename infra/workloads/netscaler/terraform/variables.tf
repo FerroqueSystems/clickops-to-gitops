@@ -65,6 +65,12 @@ variable "ubuntu_admin_user" {
   default     = "adminuser"
 }
 
+variable "bastion_repository_url" {
+  description = "Git repository URL to use from the bastion helper files."
+  type        = string
+  default     = "git@github.com:FerroqueSystems/clickops-to-gitops.git"
+}
+
 variable "controlling_subnet" {
   description = "The CIDR block of the machines that will be allowed access to the management subnet."
 }
