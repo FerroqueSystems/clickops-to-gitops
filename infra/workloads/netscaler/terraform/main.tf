@@ -181,8 +181,9 @@ resource "azurerm_linux_virtual_machine" "terraform-ubuntu-machine" {
   }
 
   custom_data = base64encode(templatefile("${path.module}/templates/bastion-cloud-init.yaml.tftpl", {
-    ubuntu_admin_user      = var.ubuntu_admin_user
-    bastion_repository_url = var.bastion_repository_url
+    ubuntu_admin_user                   = var.ubuntu_admin_user
+    bastion_repository_url              = var.bastion_repository_url
+    bastion_github_public_key_usernames = var.bastion_github_public_key_usernames
   }))
 
   os_disk {

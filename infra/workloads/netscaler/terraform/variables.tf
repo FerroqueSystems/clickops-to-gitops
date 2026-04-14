@@ -71,6 +71,12 @@ variable "bastion_repository_url" {
   default     = "git@github.com:FerroqueSystems/clickops-to-gitops.git"
 }
 
+variable "bastion_github_public_key_usernames" {
+  description = "GitHub usernames whose public SSH keys should be added to the bastion user's authorized_keys."
+  type        = list(string)
+  default     = []
+}
+
 variable "controlling_subnet" {
   description = "The CIDR block of the machines that will be allowed access to the management subnet."
 }
