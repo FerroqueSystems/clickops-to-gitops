@@ -28,3 +28,30 @@ output "domain_name" {
   description = "Active Directory DNS domain name planned for domain controller promotion."
   value       = var.domain_name
 }
+
+output "ansible_inventory" {
+  description = "Sample Ansible inventory content for promoting the domain controllers from the bastion."
+  value = join("\n", concat(
+    ["[domain_controllers]"],
+    [
+      for index, name in local.domain_controller_names :
+      format("%s ansible_host=%s", name, var.domain_controller_private_ip_addresses[index])
+    ],
+    [
+      "",
+      "[domain_controllers:vars]",
+      "ansible_connection=winrm",
+      "ansible_port=5986",
+      "ansible_winrm_transport=ntlm",
+      "ansible_winrm_server_cert_validation=ignore",
+      format("ansible_user=.\\%s", var.domain_controller_admin_username),
+      "ansible_password=REPLACE_WITH_LOCAL_ADMIN_PASSWORD",
+      "",
+      "[domain_forest]",
+      local.domain_controller_names[0],
+      "",
+      "[domain_replicas]",
+      local.domain_controller_names[1]
+    ]
+  ))
+}

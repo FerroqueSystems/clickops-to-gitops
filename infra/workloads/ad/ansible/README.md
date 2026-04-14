@@ -20,3 +20,12 @@ Active Directory forest for the `clickops.demo` domain.
 - The inventory assumes local admin credentials before the domain exists.
 - Store passwords with Ansible Vault or environment-backed variables rather than
   committing them to source control.
+
+## Run From The Bastion
+
+1. Install the collections if they are not already present:
+   `ansible-galaxy collection install -r requirements.yml`
+2. Copy `inventory.sample` to an environment-specific inventory file.
+3. Replace the local admin and domain password placeholders.
+4. Run:
+   `ansible-playbook -i inventory.sample playbook-ad.yml`

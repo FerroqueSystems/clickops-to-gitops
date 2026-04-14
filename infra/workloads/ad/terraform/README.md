@@ -7,7 +7,8 @@ workloads.
 It is intended to stand up the infrastructure layer for Active Directory domain
 controllers. Promotion into AD DS, DNS configuration, and database server
 automation should be handled in a follow-on step with configuration management
-or VM extensions.
+or VM extensions. This module now also enables WinRM HTTPS on the two Windows
+VMs so they are reachable from the bastion for the Ansible promotion step.
 
 The planned AD DNS domain name for this demo is `clickops.demo`.
 
@@ -21,7 +22,9 @@ The planned AD DNS domain name for this demo is `clickops.demo`.
 ## Next Steps
 
 1. Apply this module to create the two domain controller VMs.
-2. Promote them into AD DS and configure DNS.
+2. Use the AD Ansible playbook from the bastion to create the `clickops.demo`
+   forest on the first VM and promote the second VM as an additional domain
+   controller.
 3. Point Cloud Connectors and server workloads at the new DNS servers.
 4. Add the database workload in a separate root module or extend this one.
 
