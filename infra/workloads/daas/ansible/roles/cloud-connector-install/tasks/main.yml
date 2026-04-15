@@ -22,12 +22,23 @@
     - cc_cwc_json_enabled
   tags: [connector_install]
 
+- name: Warn when installer is enabled without cwc.json data
+  ansible.builtin.debug:
+    msg: "Set CC_CUSTOMER_ID, CC_CLIENT_ID, CC_CLIENT_SECRET, and CC_RESOURCE_LOCATION_ID, or provide CC_CWC_JSON_CONTENT, before running the Cloud Connector installer."
+  when:
+    - cc_installer_enabled | bool
+    - not (cc_cwc_json_enabled | bool)
+  changed_when: false
+  tags: [connector_install]
+
 - name: Install Citrix Cloud Connector software
   ansible.windows.win_package:
     path: "{{ cc_installer_path }}"
     arguments: "{{ cc_installer_arguments }}"
     state: present
-  when: cc_installer_enabled | bool
+  when:
+    - cc_installer_enabled | bool
+    - cc_cwc_json_enabled | bool
   tags: [connector_install]
 
 - name: Report skipped Cloud Connector installation

@@ -24,6 +24,8 @@ It provides:
 - The install role is generic by design. It expects a current Citrix Cloud
   Connector installer URL and current silent arguments from your Citrix Cloud
   workflow.
+- `cwc.json` can be generated automatically from `CC_CUSTOMER_ID`,
+  `CC_CLIENT_ID`, `CC_CLIENT_SECRET`, and `CC_RESOURCE_LOCATION_ID`.
 - If the VMs were already domain joined by Terraform, the domain join role will
   detect that and skip the join action.
 

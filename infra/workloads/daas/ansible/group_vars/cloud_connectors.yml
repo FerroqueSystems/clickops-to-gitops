@@ -15,8 +15,25 @@ cc_installer_arguments: "{{ lookup('ansible.builtin.env', 'CC_INSTALLER_ARGUMENT
 cc_installer_directory: 'C:\\Temp\\CitrixCloudConnector'
 cc_installer_path: '{{ cc_installer_directory }}\\CitrixCloudConnector.exe'
 
-cc_cwc_json_enabled: "{{ lookup('ansible.builtin.env', 'CC_CWC_JSON_CONTENT') | default('', true) | length > 0 }}"
-cc_cwc_json_content: "{{ lookup('ansible.builtin.env', 'CC_CWC_JSON_CONTENT') | default('', true) }}"
+cc_customer_id: "{{ lookup('ansible.builtin.env', 'CC_CUSTOMER_ID') | default('', true) }}"
+cc_client_id: "{{ lookup('ansible.builtin.env', 'CC_CLIENT_ID') | default('', true) }}"
+cc_client_secret: "{{ lookup('ansible.builtin.env', 'CC_CLIENT_SECRET') | default('', true) }}"
+cc_resource_location_id: "{{ lookup('ansible.builtin.env', 'CC_RESOURCE_LOCATION_ID') | default('', true) }}"
+cc_cwc_json_generated_enabled: "{{ cc_customer_id | length > 0 and cc_client_id | length > 0 and cc_client_secret | length > 0 and cc_resource_location_id | length > 0 }}"
+cc_cwc_json_enabled: "{{ cc_cwc_json_generated_enabled or (lookup('ansible.builtin.env', 'CC_CWC_JSON_CONTENT') | default('', true) | length > 0) }}"
+cc_cwc_json_content: >-
+  {{
+    (
+      {
+        'customerName': cc_customer_id,
+        'clientId': cc_client_id,
+        'clientSecret': cc_client_secret,
+        'resourceLocationId': cc_resource_location_id,
+        'acceptTermsOfService': 'true'
+      } | to_nice_json
+    ) if cc_cwc_json_generated_enabled else
+    (lookup('ansible.builtin.env', 'CC_CWC_JSON_CONTENT') | default('', true))
+  }}
 cc_cwc_json_path: '{{ cc_installer_directory }}\\cwc.json'
 
 ansible_connection: winrm
