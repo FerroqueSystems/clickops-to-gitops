@@ -20,8 +20,44 @@ output "hosting_connection_plan" {
 }
 
 output "cloud_connectors_plan" {
-  description = "Starter plan for the static Cloud Connector layer."
+  description = "Planned and deployed details for the static Cloud Connector layer."
   value       = module.cloud_connectors.plan
+}
+
+output "cloud_connector_names" {
+  description = "Names of the deployed Cloud Connector VMs."
+  value       = module.cloud_connectors.planned_names
+}
+
+output "cloud_connector_private_ips" {
+  description = "Private IP addresses assigned to the deployed Cloud Connector VMs."
+  value       = module.cloud_connectors.private_ip_addresses
+}
+
+output "cloud_connector_vm_ids" {
+  description = "Azure resource IDs for the deployed Cloud Connector VMs."
+  value       = module.cloud_connectors.virtual_machine_ids
+}
+
+output "cloud_connector_ansible_inventory" {
+  description = "Sample Ansible inventory content for managing the deployed Cloud Connector VMs from the bastion."
+  value = join("\n", concat(
+    ["[cloud_connectors]"],
+    [
+      for index, name in module.cloud_connectors.planned_names :
+      format("%s ansible_host=%s", name, module.cloud_connectors.private_ip_addresses[index])
+    ],
+    [
+      "",
+      "[cloud_connectors:vars]",
+      "ansible_connection=winrm",
+      "ansible_port=5986",
+      "ansible_winrm_transport=ntlm",
+      "ansible_winrm_server_cert_validation=ignore",
+      format("ansible_user=.\\%s", var.cloud_connector_admin_username),
+      "ansible_password=REPLACE_WITH_CLOUD_CONNECTOR_ADMIN_PASSWORD"
+    ]
+  ))
 }
 
 output "machine_catalogs_plan" {

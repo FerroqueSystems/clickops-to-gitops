@@ -10,6 +10,7 @@ resource "azurerm_virtual_network" "terraform-virtual-network" {
   location            = var.location
   resource_group_name = azurerm_resource_group.terraform-resource-group.name
   address_space       = [var.virtual_network_address_space]
+  dns_servers         = length(var.virtual_network_dns_servers) > 0 ? var.virtual_network_dns_servers : null
 }
 
 resource "azurerm_subnet" "terraform-management-subnet" {

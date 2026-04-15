@@ -14,6 +14,17 @@ cloud_connector_count      = 2
 cloud_connector_name_prefix = "ctx-cc"
 cloud_connector_vm_size    = "Standard_D4s_v5"
 cloud_connector_subnet_role = "management"
+cloud_connector_admin_username = "localadmin"
+cloud_connector_private_ip_addresses = [
+  "10.45.1.30",
+  "10.45.1.31",
+]
+cloud_connector_enable_domain_join   = true
+cloud_connector_domain_name          = "clickops.demo"
+cloud_connector_domain_join_username = "CLICKOPS\\localadmin"
+cloud_connector_auto_shutdown_enabled = true
+cloud_connector_auto_shutdown_time    = "1800"
+cloud_connector_auto_shutdown_timezone = "Eastern Standard Time"
 
 machine_catalogs = {
   win11-pooled = {
@@ -41,3 +52,6 @@ tags = {
 }
 
 # Review the current management and server subnet NSGs before deploying Cloud Connectors or VDAs.
+# Secrets are provided via environment variables or GitHub Secrets:
+# TF_VAR_cloud_connector_admin_password
+# TF_VAR_cloud_connector_domain_join_password

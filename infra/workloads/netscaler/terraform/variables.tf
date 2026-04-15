@@ -22,6 +22,12 @@ variable "virtual_network_address_space" {
   description = "Address space for the virtual network."
 }
 
+variable "virtual_network_dns_servers" {
+  description = "Optional custom DNS servers for the shared VNet. Set this to the Active Directory domain controller IPs after they are promoted."
+  type        = list(string)
+  default     = []
+}
+
 variable "management_subnet_address_prefix" {
   description = "The address prefix that will be used for the management subnet. Must be contained inside the VNet address space"
 }

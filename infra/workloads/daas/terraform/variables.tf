@@ -79,6 +79,64 @@ variable "cloud_connector_vm_size" {
   default     = "Standard_D4s_v5"
 }
 
+variable "cloud_connector_admin_username" {
+  description = "Local administrator username for the Cloud Connector Windows VMs."
+  type        = string
+  default     = "localadmin"
+}
+
+variable "cloud_connector_admin_password" {
+  description = "Local administrator password for the Cloud Connector Windows VMs."
+  type        = string
+  sensitive   = true
+}
+
+variable "cloud_connector_private_ip_addresses" {
+  description = "Optional static private IP addresses for the Cloud Connector NICs. Leave empty to use dynamic allocation."
+  type        = list(string)
+  default     = []
+
+  validation {
+    condition     = length(var.cloud_connector_private_ip_addresses) == 0 || length(var.cloud_connector_private_ip_addresses) == var.cloud_connector_count
+    error_message = "cloud_connector_private_ip_addresses must be empty or contain one value per Cloud Connector."
+  }
+}
+
+variable "cloud_connector_zones" {
+  description = "Optional availability zones for the Cloud Connector VMs."
+  type        = list(string)
+  default     = ["1", "2"]
+
+  validation {
+    condition     = length(var.cloud_connector_zones) == 0 || length(var.cloud_connector_zones) == var.cloud_connector_count
+    error_message = "cloud_connector_zones must be empty or contain one value per Cloud Connector."
+  }
+}
+
+variable "cloud_connector_image_publisher" {
+  description = "Marketplace image publisher for the Cloud Connector Windows Server image."
+  type        = string
+  default     = "MicrosoftWindowsServer"
+}
+
+variable "cloud_connector_image_offer" {
+  description = "Marketplace image offer for the Cloud Connector Windows Server image."
+  type        = string
+  default     = "WindowsServer"
+}
+
+variable "cloud_connector_image_sku" {
+  description = "Marketplace image SKU for the Cloud Connector Windows Server image."
+  type        = string
+  default     = "2022-datacenter-azure-edition"
+}
+
+variable "cloud_connector_image_version" {
+  description = "Marketplace image version for the Cloud Connector Windows Server image."
+  type        = string
+  default     = "latest"
+}
+
 variable "cloud_connector_subnet_role" {
   description = "Subnet role used for Cloud Connectors in the shared VNet."
   type        = string
@@ -88,6 +146,55 @@ variable "cloud_connector_subnet_role" {
     condition     = contains(["management", "server", "client"], var.cloud_connector_subnet_role)
     error_message = "cloud_connector_subnet_role must be one of management, server, or client."
   }
+}
+
+variable "cloud_connector_enable_domain_join" {
+  description = "Whether to join the Cloud Connector VMs to the Active Directory domain during deployment."
+  type        = bool
+  default     = true
+}
+
+variable "cloud_connector_domain_name" {
+  description = "Active Directory DNS domain name used for Cloud Connector domain join."
+  type        = string
+  default     = "clickops.demo"
+}
+
+variable "cloud_connector_domain_join_username" {
+  description = "Domain user with permission to join the Cloud Connector VMs to Active Directory."
+  type        = string
+  default     = "CLICKOPS\\localadmin"
+}
+
+variable "cloud_connector_domain_join_password" {
+  description = "Password for the domain join account used by the Cloud Connector VMs."
+  type        = string
+  sensitive   = true
+  default     = null
+}
+
+variable "cloud_connector_domain_join_ou_path" {
+  description = "Optional OU path for Cloud Connector domain join."
+  type        = string
+  default     = null
+}
+
+variable "cloud_connector_auto_shutdown_enabled" {
+  description = "Whether to enable daily auto-shutdown for Cloud Connector VMs."
+  type        = bool
+  default     = true
+}
+
+variable "cloud_connector_auto_shutdown_time" {
+  description = "Daily auto-shutdown time for Cloud Connector VMs in HHMM 24-hour format."
+  type        = string
+  default     = "1800"
+}
+
+variable "cloud_connector_auto_shutdown_timezone" {
+  description = "Windows time zone ID used by Azure for Cloud Connector auto-shutdown scheduling."
+  type        = string
+  default     = "Eastern Standard Time"
 }
 
 variable "machine_catalogs" {
