@@ -14,6 +14,7 @@ cc_installer_url: "{{ lookup('ansible.builtin.env', 'CC_INSTALLER_URL') | defaul
 cc_installer_arguments: "{{ lookup('ansible.builtin.env', 'CC_INSTALLER_ARGUMENTS') | default('/q /ParametersFilePath:C:\\Temp\\CitrixCloudConnector\\cwc.json', true) }}"
 cc_installer_directory: 'C:\\Temp\\CitrixCloudConnector'
 cc_installer_path: '{{ cc_installer_directory }}\\CitrixCloudConnector.exe'
+cc_installer_log_directory: 'C:\\ProgramData\\Citrix\\WorkspaceCloud\\InstallLogs'
 
 cc_customer_id: "{{ lookup('ansible.builtin.env', 'CC_CUSTOMER_ID') | default('', true) }}"
 cc_client_id: "{{ lookup('ansible.builtin.env', 'CC_CLIENT_ID') | default('', true) }}"

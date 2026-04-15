@@ -42,10 +42,46 @@
   tags: [connector_install]
 
 - name: Install Citrix Cloud Connector software
-  ansible.windows.win_package:
-    path: "{{ cc_installer_path }}"
-    arguments: "{{ cc_installer_arguments }}"
-    state: present
+  block:
+    - name: Run Citrix Cloud Connector installer
+      ansible.windows.win_package:
+        path: "{{ cc_installer_path }}"
+        arguments: "{{ cc_installer_arguments }}"
+        state: present
+      register: cc_install_result
+
+  rescue:
+    - name: Find Citrix Cloud Connector install logs
+      ansible.windows.win_find:
+        paths: "{{ cc_installer_log_directory }}"
+        patterns: "*.log"
+        recurse: true
+      register: cc_install_logs
+      failed_when: false
+
+    - name: Read latest Citrix Cloud Connector install log
+      ansible.windows.win_shell: |
+        $latestLog = Get-ChildItem -Path '{{ cc_installer_log_directory }}' -Recurse -Filter *.log |
+          Sort-Object LastWriteTime -Descending |
+          Select-Object -First 1
+
+        if (-not $latestLog) {
+          Write-Output 'No Citrix Cloud Connector install log file was found.'
+          exit 0
+        }
+
+        Write-Output "LatestLog=$($latestLog.FullName)"
+        Get-Content -Path $latestLog.FullName -Tail 200
+      register: cc_install_log_tail
+      failed_when: false
+
+    - name: Fail with Citrix Cloud Connector log context
+      ansible.builtin.fail:
+        msg: |-
+          Citrix Cloud Connector installation failed.
+          Latest installer log tail:
+          {{ cc_install_log_tail.stdout | default('No install log output captured.') }}
+
   when:
     - cc_installer_enabled | bool
     - cc_cwc_json_enabled | bool
