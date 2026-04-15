@@ -8,6 +8,10 @@ server_subnet_name        = "terraform-server-subnet"
 client_subnet_name        = "terraform-client-subnet"
 
 resource_location_name    = "demo-canadacentral"
+# If you do not have rights to create a Citrix resource location, set these
+# instead and Terraform will use the existing one.
+# existing_resource_location_id   = "replace-with-citrix-resource-location-id"
+# existing_resource_location_name = "demo-canadacentral"
 hosting_connection_name   = "demo-canadacentral-shared"
 citrix_cloud_environment  = "Production"
 

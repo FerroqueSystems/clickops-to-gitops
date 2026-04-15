@@ -55,6 +55,18 @@ variable "resource_location_name" {
   default     = "demo-resource-location"
 }
 
+variable "existing_resource_location_id" {
+  description = "Optional existing Citrix Cloud resource location ID. When set, Terraform will use this resource location instead of creating one."
+  type        = string
+  default     = null
+}
+
+variable "existing_resource_location_name" {
+  description = "Optional existing Citrix Cloud resource location name paired with existing_resource_location_id."
+  type        = string
+  default     = null
+}
+
 variable "citrix_customer_id" {
   description = "Citrix Cloud customer ID used by the Citrix Terraform provider."
   type        = string
