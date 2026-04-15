@@ -6,6 +6,8 @@ ad_local_admin_password: "{{ lookup('ansible.builtin.env', 'AD_LOCAL_ADMIN_PASSW
 ad_safe_mode_password: "{{ lookup('ansible.builtin.env', 'AD_SAFE_MODE_PASSWORD') }}"
 ad_domain_admin_password: "{{ lookup('ansible.builtin.env', 'AD_DOMAIN_ADMIN_PASSWORD') | default(ad_local_admin_password, true) }}"
 ad_install_dns: true
+ad_primary_domain_controller_host: "{{ groups['domain_forest'][0] }}"
+ad_primary_domain_controller_ip: "{{ hostvars[ad_primary_domain_controller_host].ansible_host }}"
 
 ansible_connection: winrm
 ansible_port: 5986

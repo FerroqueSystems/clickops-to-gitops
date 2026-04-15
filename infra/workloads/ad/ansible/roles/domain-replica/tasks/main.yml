@@ -6,6 +6,32 @@
     include_management_tools: true
     state: present
 
+- name: Point the replica at the first domain controller for DNS
+  ansible.windows.win_powershell:
+    script: |
+      $dnsServer = "{{ ad_primary_domain_controller_ip }}"
+      $adapters = Get-NetAdapter | Where-Object { $_.Status -eq 'Up' }
+
+      if (-not $adapters) {
+        throw "No active network adapters found while setting DNS client configuration."
+      }
+
+      foreach ($adapter in $adapters) {
+        Set-DnsClientServerAddress -InterfaceIndex $adapter.InterfaceIndex -ServerAddresses $dnsServer
+      }
+
+      Clear-DnsClientCache
+
+- name: Wait for the replica to resolve the Active Directory zone from the first domain controller
+  ansible.windows.win_powershell:
+    script: |
+      Resolve-DnsName -Name "{{ ad_domain_name }}" -Server "{{ ad_primary_domain_controller_ip }}" -Type SOA -ErrorAction Stop | Out-Null
+      Resolve-DnsName -Name "{{ ad_domain_name }}" -Type SOA -ErrorAction Stop | Out-Null
+  register: replica_dns_ready
+  retries: 24
+  delay: 15
+  until: replica_dns_ready is succeeded
+
 - name: Promote the replica as an additional clickops.demo domain controller
   microsoft.ad.domain_controller:
     dns_domain_name: "{{ ad_domain_name }}"

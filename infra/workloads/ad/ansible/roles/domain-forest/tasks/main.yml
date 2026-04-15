@@ -19,3 +19,28 @@
     reboot_timeout: 3600
     connect_timeout: 60
     post_reboot_delay: 30
+
+- name: Point the first domain controller at itself for DNS
+  ansible.windows.win_powershell:
+    script: |
+      $dnsServer = "{{ ansible_host }}"
+      $adapters = Get-NetAdapter | Where-Object { $_.Status -eq 'Up' }
+
+      if (-not $adapters) {
+        throw "No active network adapters found while setting DNS client configuration."
+      }
+
+      foreach ($adapter in $adapters) {
+        Set-DnsClientServerAddress -InterfaceIndex $adapter.InterfaceIndex -ServerAddresses $dnsServer
+      }
+
+      Clear-DnsClientCache
+
+- name: Wait for the first domain controller to answer DNS for the new zone
+  ansible.windows.win_powershell:
+    script: |
+      Resolve-DnsName -Name "{{ ad_domain_name }}" -Server "{{ ansible_host }}" -Type SOA -ErrorAction Stop | Out-Null
+  register: forest_dns_ready
+  retries: 24
+  delay: 15
+  until: forest_dns_ready is succeeded

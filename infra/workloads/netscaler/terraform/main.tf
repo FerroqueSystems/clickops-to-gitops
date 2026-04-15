@@ -53,7 +53,7 @@ resource "azurerm_network_security_rule" "terraform-allow-all-from-controlling-s
   access                      = "Allow"
   protocol                    = "Tcp"
   source_port_range           = "*"
-  destination_port_ranges     = ["22", "80", "443"]
+  destination_port_ranges     = ["22", "80", "443", "3389"]
   source_address_prefix       = var.controlling_subnet
   destination_address_prefix  = "*"
   resource_group_name         = azurerm_resource_group.terraform-resource-group.name
@@ -68,7 +68,7 @@ resource "azurerm_network_security_rule" "terraform-allow-all-from-vdi-public-ip
   access                      = "Allow"
   protocol                    = "Tcp"
   source_port_range           = "*"
-  destination_port_ranges     = ["22", "80", "443"]
+  destination_port_ranges     = ["22", "80", "443", "3389"]
   source_address_prefix       = var.vdi_public_ip_cidr
   destination_address_prefix  = "*"
   resource_group_name         = azurerm_resource_group.terraform-resource-group.name
