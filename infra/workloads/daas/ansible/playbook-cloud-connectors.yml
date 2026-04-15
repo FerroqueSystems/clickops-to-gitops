@@ -1,0 +1,26 @@
+---
+- name: Domain join Cloud Connector VMs
+  hosts: cloud_connectors
+  gather_facts: false
+  pre_tasks:
+    - name: Validate Cloud Connector local admin password
+      ansible.builtin.assert:
+        that:
+          - cc_local_admin_password | length > 0
+        fail_msg: Set CC_LOCAL_ADMIN_PASSWORD in the bastion shell before running the playbook.
+
+  roles:
+    - cloud-connector-domain
+
+- name: Install and configure Citrix Cloud Connector software
+  hosts: cloud_connectors
+  gather_facts: false
+  pre_tasks:
+    - name: Validate Cloud Connector local admin password for install play
+      ansible.builtin.assert:
+        that:
+          - cc_local_admin_password | length > 0
+        fail_msg: Set CC_LOCAL_ADMIN_PASSWORD in the bastion shell before running the playbook.
+
+  roles:
+    - cloud-connector-install

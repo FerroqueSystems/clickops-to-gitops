@@ -1,0 +1,27 @@
+---
+cc_domain_name: clickops.demo
+cc_domain_join_enabled: "{{ lookup('ansible.builtin.env', 'CC_DOMAIN_JOIN_ENABLED') | default('true', true) | lower == 'true' }}"
+cc_domain_join_username: "{{ lookup('ansible.builtin.env', 'CC_DOMAIN_JOIN_USERNAME') | default('CLICKOPS\\localadmin', true) }}"
+cc_domain_join_password: "{{ lookup('ansible.builtin.env', 'CC_DOMAIN_JOIN_PASSWORD') }}"
+cc_domain_join_ou_path: "{{ lookup('ansible.builtin.env', 'CC_DOMAIN_JOIN_OU_PATH') | default('', true) }}"
+cc_dns_servers: ["10.45.1.20", "10.45.1.21"]
+
+cc_local_admin_username: localadmin
+cc_local_admin_password: "{{ lookup('ansible.builtin.env', 'CC_LOCAL_ADMIN_PASSWORD') }}"
+
+cc_installer_enabled: "{{ lookup('ansible.builtin.env', 'CC_INSTALLER_URL') | default('', true) | length > 0 }}"
+cc_installer_url: "{{ lookup('ansible.builtin.env', 'CC_INSTALLER_URL') | default('', true) }}"
+cc_installer_arguments: "{{ lookup('ansible.builtin.env', 'CC_INSTALLER_ARGUMENTS') | default('/quiet /norestart', true) }}"
+cc_installer_directory: 'C:\\Temp\\CitrixCloudConnector'
+cc_installer_path: '{{ cc_installer_directory }}\\CitrixCloudConnector.exe'
+
+cc_cwc_json_enabled: "{{ lookup('ansible.builtin.env', 'CC_CWC_JSON_CONTENT') | default('', true) | length > 0 }}"
+cc_cwc_json_content: "{{ lookup('ansible.builtin.env', 'CC_CWC_JSON_CONTENT') | default('', true) }}"
+cc_cwc_json_path: '{{ cc_installer_directory }}\\cwc.json'
+
+ansible_connection: winrm
+ansible_port: 5986
+ansible_winrm_transport: ntlm
+ansible_winrm_server_cert_validation: ignore
+ansible_user: '.\{{ cc_local_admin_username }}'
+ansible_password: "{{ cc_local_admin_password }}"

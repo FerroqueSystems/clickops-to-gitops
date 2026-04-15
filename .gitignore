@@ -17,6 +17,8 @@ backend.hcl
 .env
 infra/workloads/ad/ansible/ad-secrets.env
 infra/workloads/ad/ansible/inventory.ini
+infra/workloads/daas/ansible/cc-secrets.env
+infra/workloads/daas/ansible/inventory.ini
 
 # Terraform plan files
 *.tfplan

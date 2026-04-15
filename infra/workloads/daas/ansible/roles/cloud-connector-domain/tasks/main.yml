@@ -1,0 +1,85 @@
+---
+- name: Check current domain membership
+  ansible.windows.win_shell: |
+    $computerSystem = Get-CimInstance Win32_ComputerSystem
+    [pscustomobject]@{
+      PartOfDomain = $computerSystem.PartOfDomain
+      Domain       = $computerSystem.Domain
+    } | ConvertTo-Json -Compress
+  register: cc_domain_membership_raw
+  changed_when: false
+  tags: [domain_join]
+
+- name: Parse current domain membership
+  ansible.builtin.set_fact:
+    cc_domain_membership: "{{ cc_domain_membership_raw.stdout | from_json }}"
+  tags: [domain_join]
+
+- name: Point Cloud Connector DNS clients at the Active Directory servers
+  ansible.windows.win_powershell:
+    script: |
+      $dnsServers = @(
+        {{ cc_dns_servers | map('regex_replace', '^(.*)$', '"\1"') | join(", ") }}
+      )
+      $adapters = Get-NetAdapter | Where-Object { $_.Status -eq 'Up' }
+      if (-not $adapters) {
+        throw "No active network adapters found while setting DNS client configuration."
+      }
+
+      foreach ($adapter in $adapters) {
+        Set-DnsClientServerAddress -InterfaceIndex $adapter.InterfaceIndex -ServerAddresses $dnsServers
+      }
+
+      Clear-DnsClientCache
+  when: cc_dns_servers | length > 0
+  tags: [domain_join]
+
+- name: Join Cloud Connector VM to the domain when needed
+  ansible.windows.win_shell: |
+    $password = ConvertTo-SecureString '{{ cc_domain_join_password }}' -AsPlainText -Force
+    $credential = New-Object System.Management.Automation.PSCredential('{{ cc_domain_join_username }}', $password)
+
+    $addComputerArgs = @{
+      DomainName  = '{{ cc_domain_name }}'
+      Credential  = $credential
+      Force       = $true
+      ErrorAction = 'Stop'
+    }
+
+    if ('{{ cc_domain_join_ou_path }}' -ne '') {
+      $addComputerArgs['OUPath'] = '{{ cc_domain_join_ou_path }}'
+    }
+
+    Add-Computer @addComputerArgs
+  when:
+    - cc_domain_join_enabled | bool
+    - cc_domain_join_password | length > 0
+    - not cc_domain_membership.PartOfDomain or cc_domain_membership.Domain | lower != cc_domain_name | lower
+  register: cc_domain_join_result
+  changed_when: true
+  tags: [domain_join]
+
+- name: Reboot after domain join
+  ansible.windows.win_reboot:
+    reboot_timeout: 3600
+    connect_timeout: 60
+    post_reboot_delay: 45
+  when: cc_domain_join_result is changed
+  tags: [domain_join]
+
+- name: Report skipped domain join state
+  ansible.builtin.debug:
+    msg: "Cloud Connector is already joined to {{ cc_domain_membership.Domain }}."
+  when:
+    - cc_domain_join_enabled | bool
+    - cc_domain_membership.PartOfDomain
+    - cc_domain_membership.Domain | lower == cc_domain_name | lower
+  changed_when: false
+  tags: [domain_join]
+
+- name: Report domain join disabled
+  ansible.builtin.debug:
+    msg: "CC_DOMAIN_JOIN_ENABLED is false, skipping domain join."
+  when: not (cc_domain_join_enabled | bool)
+  changed_when: false
+  tags: [domain_join]

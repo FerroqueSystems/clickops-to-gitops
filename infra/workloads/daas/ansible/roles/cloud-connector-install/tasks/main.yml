@@ -1,0 +1,38 @@
+---
+- name: Ensure Cloud Connector staging directory exists
+  ansible.windows.win_file:
+    path: "{{ cc_installer_directory }}"
+    state: directory
+  when: cc_installer_enabled | bool
+  tags: [connector_install]
+
+- name: Download Cloud Connector installer
+  ansible.windows.win_get_url:
+    url: "{{ cc_installer_url }}"
+    dest: "{{ cc_installer_path }}"
+  when: cc_installer_enabled | bool
+  tags: [connector_install]
+
+- name: Write cwc.json when provided
+  ansible.windows.win_copy:
+    dest: "{{ cc_cwc_json_path }}"
+    content: "{{ cc_cwc_json_content }}"
+  when:
+    - cc_installer_enabled | bool
+    - cc_cwc_json_enabled
+  tags: [connector_install]
+
+- name: Install Citrix Cloud Connector software
+  ansible.windows.win_package:
+    path: "{{ cc_installer_path }}"
+    arguments: "{{ cc_installer_arguments }}"
+    state: present
+  when: cc_installer_enabled | bool
+  tags: [connector_install]
+
+- name: Report skipped Cloud Connector installation
+  ansible.builtin.debug:
+    msg: "Set CC_INSTALLER_URL, and optionally CC_CWC_JSON_CONTENT, to enable Citrix Cloud Connector installation."
+  when: not (cc_installer_enabled | bool)
+  changed_when: false
+  tags: [connector_install]

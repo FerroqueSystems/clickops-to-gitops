@@ -45,16 +45,16 @@ The handbook outlines a 10-step process for deploying Citrix DaaS on Azure using
 ### Part 4: Putting the 2 Cloud Connector VMs Into the Active Directory Domain
 **Description**: Use Ansible to join CC VMs to AD domain.  
 **Repo Implementation**: Partially implemented.  
-- **Ansible Playbooks**: `citrix/ansible/playbook-citrix.yml` – Example playbook for domain join.  
-- **Roles**: `citrix/ansible/roles/citrix-baseline/tasks/` – Extend for AD tasks.  
-**Key Files**: `citrix/ansible/playbook-citrix.yml`, `citrix/ansible/inventory.sample`.
+- **Ansible Playbooks**: `infra/workloads/daas/ansible/playbook-cloud-connectors.yml` – Domain join and Cloud Connector install scaffold.  
+- **Roles**: `infra/workloads/daas/ansible/roles/cloud-connector-domain/` – Domain join and DNS bootstrap.  
+**Key Files**: `infra/workloads/daas/ansible/playbook-cloud-connectors.yml`, `infra/workloads/daas/ansible/render-inventory.sh`.
 
 ### Part 5: Installing and Configuring the Cloud Connector Software
 **Description**: Deploy CC software, generate config (cwc.json), and register with Citrix Cloud.  
 **Repo Implementation**: Partially implemented.  
-- **Ansible Roles**: `citrix/ansible/roles/citrix-baseline/tasks/` – Add tasks for CC installation.  
+- **Ansible Roles**: `infra/workloads/daas/ansible/roles/cloud-connector-install/tasks/` – Generic staged installer and `cwc.json` scaffold.  
 - **Terraform Integration**: `workloads/daas/terraform/resource_location.tf` – Provides resource location ID.  
-**Key Files**: `citrix/ansible/roles/citrix-baseline/tasks/main.yml`, `workloads/daas/terraform/resource_location.tf`.
+**Key Files**: `infra/workloads/daas/ansible/roles/cloud-connector-install/tasks/main.yml`, `workloads/daas/terraform/resource_location.tf`.
 
 ### Part 6: Creating the Hypervisor Connection and Hypervisor Resource Pool
 **Description**: Connect Azure as hypervisor and create resource pools.  

@@ -1,0 +1,3 @@
+[cloud_connectors]
+ctx-cc-demo-01 ansible_host=10.45.1.30
+ctx-cc-demo-02 ansible_host=10.45.1.31
