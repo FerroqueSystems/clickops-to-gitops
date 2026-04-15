@@ -31,6 +31,16 @@
   changed_when: false
   tags: [connector_install]
 
+- name: Fail when installer arguments do not reference the parameters file
+  ansible.builtin.assert:
+    that:
+      - "'ParametersFilePath' in cc_installer_arguments"
+    fail_msg: "CC_INSTALLER_ARGUMENTS must include /ParametersFilePath:<path-to-cwc.json> for silent Cloud Connector installation."
+  when:
+    - cc_installer_enabled | bool
+    - cc_cwc_json_enabled | bool
+  tags: [connector_install]
+
 - name: Install Citrix Cloud Connector software
   ansible.windows.win_package:
     path: "{{ cc_installer_path }}"

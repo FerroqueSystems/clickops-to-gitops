@@ -11,7 +11,7 @@ cc_local_admin_password: "{{ lookup('ansible.builtin.env', 'CC_LOCAL_ADMIN_PASSW
 
 cc_installer_enabled: "{{ lookup('ansible.builtin.env', 'CC_INSTALLER_URL') | default('', true) | length > 0 }}"
 cc_installer_url: "{{ lookup('ansible.builtin.env', 'CC_INSTALLER_URL') | default('', true) }}"
-cc_installer_arguments: "{{ lookup('ansible.builtin.env', 'CC_INSTALLER_ARGUMENTS') | default('/quiet /norestart', true) }}"
+cc_installer_arguments: "{{ lookup('ansible.builtin.env', 'CC_INSTALLER_ARGUMENTS') | default('/q /ParametersFilePath:C:\\Temp\\CitrixCloudConnector\\cwc.json', true) }}"
 cc_installer_directory: 'C:\\Temp\\CitrixCloudConnector'
 cc_installer_path: '{{ cc_installer_directory }}\\CitrixCloudConnector.exe'
 
