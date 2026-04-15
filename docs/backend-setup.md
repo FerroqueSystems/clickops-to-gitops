@@ -43,7 +43,7 @@ Example for NetScaler:
 ```bash
 cd infra/workloads/netscaler/terraform
 cp backend.hcl.example backend.hcl
-terraform init -migrate-state -backend-config=backend.hcl
+terraform init -migrate-state -backend-config backend.hcl
 ```
 
 Example for AD:
@@ -51,7 +51,7 @@ Example for AD:
 ```bash
 cd infra/workloads/ad/terraform
 cp backend.hcl.example backend.hcl
-terraform init -migrate-state -backend-config=backend.hcl
+terraform init -migrate-state -backend-config backend.hcl
 ```
 
 Example for DaaS:
@@ -59,7 +59,7 @@ Example for DaaS:
 ```bash
 cd infra/workloads/daas/terraform
 cp backend.hcl.example backend.hcl
-terraform init -migrate-state -backend-config=backend.hcl
+terraform init -migrate-state -backend-config backend.hcl
 ```
 
 Use a different `key` value per root, but keep the same storage account and container so laptop, bastion, and CI all share one backend.
