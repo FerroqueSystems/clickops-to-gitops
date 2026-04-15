@@ -10,8 +10,18 @@ output "shared_infra" {
 }
 
 output "resource_location_plan" {
-  description = "Starter plan object for the Citrix resource location."
+  description = "Citrix resource location details."
   value       = local.resource_location_plan
+}
+
+output "resource_location_id" {
+  description = "Actual Citrix Cloud resource location ID."
+  value       = citrix_cloud_resource_location.this.id
+}
+
+output "resource_location_name" {
+  description = "Actual Citrix Cloud resource location name."
+  value       = citrix_cloud_resource_location.this.name
 }
 
 output "hosting_connection_plan" {

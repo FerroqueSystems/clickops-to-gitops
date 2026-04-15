@@ -50,9 +50,33 @@ variable "client_subnet_name" {
 }
 
 variable "resource_location_name" {
-  description = "Planned Citrix resource location name."
+  description = "Citrix Cloud resource location name."
   type        = string
   default     = "demo-resource-location"
+}
+
+variable "citrix_customer_id" {
+  description = "Citrix Cloud customer ID used by the Citrix Terraform provider."
+  type        = string
+  sensitive   = true
+}
+
+variable "citrix_client_id" {
+  description = "Citrix Cloud service principal ID used by the Citrix Terraform provider."
+  type        = string
+  sensitive   = true
+}
+
+variable "citrix_client_secret" {
+  description = "Citrix Cloud service principal secret used by the Citrix Terraform provider."
+  type        = string
+  sensitive   = true
+}
+
+variable "citrix_cloud_environment" {
+  description = "Citrix Cloud environment used by the Citrix Terraform provider."
+  type        = string
+  default     = "Production"
 }
 
 variable "hosting_connection_name" {

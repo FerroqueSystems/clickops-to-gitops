@@ -9,6 +9,7 @@ client_subnet_name        = "terraform-client-subnet"
 
 resource_location_name    = "demo-canadacentral"
 hosting_connection_name   = "demo-canadacentral-shared"
+citrix_cloud_environment  = "Production"
 
 cloud_connector_count      = 2
 cloud_connector_name_prefix = "ctx-cc"
@@ -55,3 +56,6 @@ tags = {
 # Secrets are provided via environment variables or GitHub Secrets:
 # TF_VAR_cloud_connector_admin_password
 # TF_VAR_cloud_connector_domain_join_password
+# TF_VAR_citrix_customer_id
+# TF_VAR_citrix_client_id
+# TF_VAR_citrix_client_secret
