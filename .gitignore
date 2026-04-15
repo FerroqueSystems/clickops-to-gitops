@@ -11,6 +11,9 @@ override.tf.json
 *_override.tf.json
 *.tfvars
 *.tfvars.json
+backend.tf
+backend.hcl
+*.backend.hcl
 .env
 
 # Terraform plan files

@@ -22,4 +22,44 @@ In GitHub repository secrets, add:
 - `ARM_TENANT_ID`
 - `ARM_SUBSCRIPTION_ID`
 
-Copy `backend.tf.example` → `backend.tf` and replace placeholders with the real resource names.
+In GitHub repository variables, add:
+- `TFSTATE_RESOURCE_GROUP`
+- `TFSTATE_STORAGE_ACCOUNT`
+- `TFSTATE_CONTAINER`
+
+## Per-root backend config
+
+Each Terraform root uses an empty `backend "azurerm" {}` block and a local backend config file.
+
+Example files:
+- `infra/workloads/ad/terraform/backend.hcl.example`
+- `infra/workloads/daas/terraform/backend.hcl.example`
+- `infra/workloads/netscaler/terraform/backend.hcl.example`
+
+Copy the relevant example file to `backend.hcl` in that root and replace the placeholders with your real state resource names.
+
+Example for NetScaler:
+
+```bash
+cd infra/workloads/netscaler/terraform
+cp backend.hcl.example backend.hcl
+terraform init -migrate-state -backend-config=backend.hcl
+```
+
+Example for AD:
+
+```bash
+cd infra/workloads/ad/terraform
+cp backend.hcl.example backend.hcl
+terraform init -migrate-state -backend-config=backend.hcl
+```
+
+Example for DaaS:
+
+```bash
+cd infra/workloads/daas/terraform
+cp backend.hcl.example backend.hcl
+terraform init -migrate-state -backend-config=backend.hcl
+```
+
+Use a different `key` value per root, but keep the same storage account and container so laptop, bastion, and CI all share one backend.
