@@ -1,6 +1,15 @@
 ---
 ad_domain_name: clickops.demo
 ad_domain_netbios_name: CLICKOPS
-ad_safe_mode_password: REPLACE_WITH_DSRM_PASSWORD
-ad_domain_admin_password: REPLACE_WITH_DOMAIN_ADMIN_PASSWORD
+ad_local_admin_username: localadmin
+ad_local_admin_password: "{{ lookup('ansible.builtin.env', 'AD_LOCAL_ADMIN_PASSWORD') }}"
+ad_safe_mode_password: "{{ lookup('ansible.builtin.env', 'AD_SAFE_MODE_PASSWORD') }}"
+ad_domain_admin_password: "{{ lookup('ansible.builtin.env', 'AD_DOMAIN_ADMIN_PASSWORD') | default(ad_local_admin_password, true) }}"
 ad_install_dns: true
+
+ansible_connection: winrm
+ansible_port: 5986
+ansible_winrm_transport: ntlm
+ansible_winrm_server_cert_validation: ignore
+ansible_user: '.\{{ ad_local_admin_username }}'
+ansible_password: "{{ ad_local_admin_password }}"

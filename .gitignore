@@ -15,6 +15,8 @@ backend.tf
 backend.hcl
 *.backend.hcl
 .env
+infra/workloads/ad/ansible/ad-secrets.env
+infra/workloads/ad/ansible/inventory.ini
 
 # Terraform plan files
 *.tfplan

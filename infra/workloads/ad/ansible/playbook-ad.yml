@@ -2,6 +2,13 @@
 - name: Promote first server to forest root domain controller
   hosts: domain_forest
   gather_facts: false
+  pre_tasks:
+    - name: Validate forest promotion secrets
+      ansible.builtin.assert:
+        that:
+          - ad_local_admin_password | length > 0
+          - ad_safe_mode_password | length > 0
+        fail_msg: Set AD_LOCAL_ADMIN_PASSWORD and AD_SAFE_MODE_PASSWORD in the bastion shell before running the playbook.
 
   roles:
     - domain-forest
@@ -9,6 +16,14 @@
 - name: Promote second server to additional domain controller
   hosts: domain_replicas
   gather_facts: false
+  pre_tasks:
+    - name: Validate replica promotion secrets
+      ansible.builtin.assert:
+        that:
+          - ad_local_admin_password | length > 0
+          - ad_safe_mode_password | length > 0
+          - ad_domain_admin_password | length > 0
+        fail_msg: Set AD_LOCAL_ADMIN_PASSWORD and AD_SAFE_MODE_PASSWORD, and optionally AD_DOMAIN_ADMIN_PASSWORD, in the bastion shell before running the playbook.
 
   roles:
     - domain-replica

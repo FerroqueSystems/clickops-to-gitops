@@ -17,7 +17,7 @@ Active Directory forest for the `clickops.demo` domain.
 
 - Run this from a Linux-based control node that can reach the private IPs of the
   domain controller VMs over WinRM.
-- The inventory assumes local admin credentials before the domain exists.
+- Generate the inventory from Terraform output rather than hand-editing host IPs.
 - Store passwords with Ansible Vault or environment-backed variables rather than
   committing them to source control.
 
@@ -25,7 +25,13 @@ Active Directory forest for the `clickops.demo` domain.
 
 1. Install the collections if they are not already present:
    `ansible-galaxy collection install -r requirements.yml`
-2. Copy `inventory.sample` to an environment-specific inventory file.
-3. Replace the local admin and domain password placeholders.
+2. Generate the inventory from the Terraform root:
+   `bash render-inventory.sh`
+3. Copy `ad-secrets.env.example` to `ad-secrets.env`, set the passwords, and load
+   them into the shell:
+   `chmod 600 ad-secrets.env && source ad-secrets.env`
 4. Run:
-   `ansible-playbook -i inventory.sample playbook-ad.yml`
+   `ansible-playbook -i inventory.ini playbook-ad.yml`
+
+`AD_DOMAIN_ADMIN_PASSWORD` is optional. If it is omitted, the replica promotion
+step reuses `AD_LOCAL_ADMIN_PASSWORD` for `CLICKOPS\Administrator`.
