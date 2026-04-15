@@ -35,7 +35,7 @@
 - name: Promote the replica as an additional clickops.demo domain controller
   microsoft.ad.domain_controller:
     dns_domain_name: "{{ ad_domain_name }}"
-    domain_admin_user: "{{ ad_domain_netbios_name }}\\Administrator"
+    domain_admin_user: "{{ ad_domain_admin_username }}"
     domain_admin_password: "{{ ad_domain_admin_password }}"
     safe_mode_password: "{{ ad_safe_mode_password }}"
     install_dns: "{{ ad_install_dns }}"
