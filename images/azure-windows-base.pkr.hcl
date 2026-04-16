@@ -156,7 +156,7 @@ build {
   provisioner "powershell" {
     environment_vars = [
       "INSTALL_WINGET_PACKAGES=${var.install_winget_packages}",
-      "WINGET_PACKAGE_IDS=${join(\"|\", var.winget_package_ids)}"
+      "WINGET_PACKAGE_IDS=${join("|", var.winget_package_ids)}"
     ]
     script = "${path.root}/scripts/windows/install-winget-packages.ps1"
   }
