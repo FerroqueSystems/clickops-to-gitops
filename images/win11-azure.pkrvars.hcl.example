@@ -1,0 +1,19 @@
+subscription_id             = "00000000-0000-0000-0000-000000000000"
+location                    = "canadacentral"
+build_resource_group_name   = "rg-clickops-gitops-foundation-demo"
+gallery_resource_group_name = "rg-clickops-gitops-foundation-demo"
+gallery_name                = "cg-clickops-demo"
+gallery_image_name          = "win11-23h2-cvad"
+gallery_image_version       = "1.0.0"
+
+# Review publisher / offer / sku in Azure before first build.
+azure_imgpublisher = "MicrosoftWindowsDesktop"
+azure_imgoffer     = "windows-11"
+azure_imgsku       = "win11-23h2-pro"
+azure_imgversion   = "latest"
+
+managed_image_tags = {
+  Environment = "demo"
+  Role        = "golden-image"
+  OS          = "windows-11"
+}

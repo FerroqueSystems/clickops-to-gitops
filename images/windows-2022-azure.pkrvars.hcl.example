@@ -1,0 +1,18 @@
+subscription_id             = "00000000-0000-0000-0000-000000000000"
+location                    = "canadacentral"
+build_resource_group_name   = "rg-clickops-gitops-foundation-demo"
+gallery_resource_group_name = "rg-clickops-gitops-foundation-demo"
+gallery_name                = "cg-clickops-demo"
+gallery_image_name          = "ws2022-cvad-apps"
+gallery_image_version       = "1.0.0"
+
+azure_imgpublisher = "MicrosoftWindowsServer"
+azure_imgoffer     = "WindowsServer"
+azure_imgsku       = "2022-datacenter-azure-edition"
+azure_imgversion   = "latest"
+
+managed_image_tags = {
+  Environment = "demo"
+  Role        = "golden-image"
+  OS          = "windows-server-2022"
+}

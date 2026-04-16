@@ -54,3 +54,15 @@ module "adm_agent" {
   resource_group_name = var.resource_group_name
   location            = var.location
 }
+
+module "compute_gallery" {
+  source = "./modules/compute-gallery"
+  count  = var.enable_compute_gallery ? 1 : 0
+
+  resource_group_name = var.resource_group_name
+  location            = var.location
+  gallery_name        = var.compute_gallery_name
+  description         = var.compute_gallery_description
+  image_definitions   = var.compute_gallery_image_definitions
+  tags                = var.compute_gallery_tags
+}
