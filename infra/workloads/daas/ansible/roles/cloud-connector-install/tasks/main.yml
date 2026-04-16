@@ -43,12 +43,86 @@
 
 - name: Install Citrix Cloud Connector software
   block:
-    - name: Run Citrix Cloud Connector installer
-      ansible.windows.win_package:
-        path: "{{ cc_installer_path }}"
-        arguments: "{{ cc_installer_arguments }}"
-        state: present
-      register: cc_install_result
+    - name: Remove previous installer result file
+      ansible.windows.win_file:
+        path: "{{ cc_installer_result_path }}"
+        state: absent
+
+    - name: Write local Cloud Connector installer runner script
+      ansible.windows.win_copy:
+        dest: "{{ cc_installer_runner_script_path }}"
+        content: |
+          $ErrorActionPreference = 'Stop'
+          $resultPath = '{{ cc_installer_result_path | replace("'", "''") }}'
+          $installerPath = '{{ cc_installer_path | replace("'", "''") }}'
+          $installerArguments = '{{ cc_installer_arguments | replace("'", "''") }}'
+
+          try {
+            $process = Start-Process -FilePath $installerPath -ArgumentList $installerArguments -Wait -PassThru -WindowStyle Hidden
+            $result = @{
+              exit_code = [int]$process.ExitCode
+              success = ($process.ExitCode -eq 0)
+              ran_as = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
+            }
+          }
+          catch {
+            $result = @{
+              exit_code = -1
+              success = $false
+              ran_as = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
+              error = $_.Exception.Message
+            }
+          }
+
+          $result | ConvertTo-Json -Depth 4 | Set-Content -Path $resultPath -Encoding UTF8
+
+    - name: Register and start Cloud Connector installer scheduled task
+      ansible.windows.win_shell: |
+        $taskName = '{{ cc_installer_task_name }}'
+        $scriptPath = '{{ cc_installer_runner_script_path }}'
+
+        $existingTask = Get-ScheduledTask -TaskName $taskName -ErrorAction SilentlyContinue
+        if ($existingTask) {
+          Unregister-ScheduledTask -TaskName $taskName -Confirm:$false
+        }
+
+        $action = New-ScheduledTaskAction -Execute 'PowerShell.exe' -Argument "-NoProfile -ExecutionPolicy Bypass -File `"$scriptPath`""
+        $trigger = New-ScheduledTaskTrigger -Once -At ((Get-Date).AddMinutes(1))
+
+        Register-ScheduledTask -TaskName $taskName -Action $action -Trigger $trigger -User 'SYSTEM' -RunLevel Highest -Force | Out-Null
+        Start-ScheduledTask -TaskName $taskName
+
+    - name: Wait for local Cloud Connector installer result
+      ansible.windows.win_shell: |
+        $resultPath = '{{ cc_installer_result_path }}'
+        $deadline = (Get-Date).AddMinutes(20)
+
+        while ((Get-Date) -lt $deadline) {
+          if (Test-Path $resultPath) {
+            Get-Content -Path $resultPath -Raw
+            exit 0
+          }
+
+          Start-Sleep -Seconds 10
+        }
+
+        Write-Error "Timed out waiting for Cloud Connector installer result at $resultPath."
+      register: cc_install_result_raw
+
+    - name: Parse local Cloud Connector installer result
+      ansible.builtin.set_fact:
+        cc_install_result: "{{ cc_install_result_raw.stdout | from_json }}"
+
+    - name: Fail when local Cloud Connector installer returns a non-zero exit code
+      ansible.builtin.assert:
+        that:
+          - cc_install_result.success | bool
+          - cc_install_result.exit_code | int == 0
+        fail_msg: >-
+          Cloud Connector installer failed when run locally as
+          {{ cc_install_result.ran_as | default('unknown') }} with exit code
+          {{ cc_install_result.exit_code | default('unknown') }}.
+          {{ cc_install_result.error | default('No additional runner error was captured.') }}
 
   rescue:
     - name: Find Citrix Cloud Connector install logs
@@ -81,6 +155,16 @@
           Citrix Cloud Connector installation failed.
           Latest installer log tail:
           {{ cc_install_log_tail.stdout | default('No install log output captured.') }}
+
+  always:
+    - name: Remove Cloud Connector installer scheduled task
+      ansible.windows.win_shell: |
+        $taskName = '{{ cc_installer_task_name }}'
+        $existingTask = Get-ScheduledTask -TaskName $taskName -ErrorAction SilentlyContinue
+        if ($existingTask) {
+          Unregister-ScheduledTask -TaskName $taskName -Confirm:$false
+        }
+      failed_when: false
 
   when:
     - cc_installer_enabled | bool
