@@ -2,7 +2,7 @@ subscription_id             = "00000000-0000-0000-0000-000000000000"
 location                    = "canadacentral"
 build_resource_group_name   = "rg-clickops-gitops-foundation-demo"
 gallery_resource_group_name = "rg-clickops-gitops-foundation-demo"
-gallery_name                = "cg-clickops-demo"
+gallery_name                = "cgclickopsdemo"
 gallery_image_name          = "win11-23h2-cvad"
 gallery_image_version       = "1.0.0"
 

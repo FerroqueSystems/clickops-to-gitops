@@ -9,7 +9,7 @@ enable_identity_entra    = false
 enable_adm_agent         = false
 enable_compute_gallery   = true
 
-compute_gallery_name        = "cg-clickops-demo"
+compute_gallery_name        = "cgclickopsdemo"
 compute_gallery_description = "Compute Gallery for Citrix base images"
 
 compute_gallery_image_definitions = {
