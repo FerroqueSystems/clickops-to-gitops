@@ -42,7 +42,7 @@ Notes:
 
 - `Microsoft.Edge` is already present on some Microsoft base images, so including it is mostly a demonstration of the Packer phase.
 - `Microsoft.Office` installs software, but licensing and activation remain a separate concern.
-- `winget` is native on Windows 11. On Windows Server 2022, this template attempts to bootstrap it with `Microsoft.WinGet.Client` before package installation.
+- `winget` is native on Windows 11. Windows Server 2022 is not a clean target for `winget`-based image baking, so the Server 2022 example leaves `install_winget_packages = false` by default.
 
 ## Example
 

@@ -11,16 +11,8 @@ azure_imgoffer     = "WindowsServer"
 azure_imgsku       = "2022-datacenter-azure-edition"
 azure_imgversion   = "latest"
 
-install_winget_packages = true
-winget_package_ids = [
-  "Microsoft.Teams",
-  "SlackTechnologies.Slack",
-  "Microsoft.VisualStudioCode",
-  "Google.Chrome",
-  "Microsoft.Edge",
-  "Notepad++.Notepad++",
-  "Microsoft.Office",
-]
+install_winget_packages = false
+winget_package_ids      = []
 
 managed_image_tags = {
   Environment = "demo"

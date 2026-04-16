@@ -19,11 +19,11 @@ compute_gallery_image_definitions = {
     offer     = "windows-server"
     sku       = "ws2022-cvad-apps"
   }
-  "win11-23h2-cvad" = {
+  "win11-25h2-cvad" = {
     os_type   = "Windows"
     publisher = "Ferroque"
     offer     = "windows-11"
-    sku       = "win11-23h2-cvad"
+    sku       = "win11-25h2-cvad"
   }
 }
 
