@@ -82,6 +82,16 @@ variable "managed_image_tags" {
   default = {}
 }
 
+variable "install_winget_packages" {
+  type    = bool
+  default = false
+}
+
+variable "winget_package_ids" {
+  type    = list(string)
+  default = []
+}
+
 locals {
   shared_image_replication_regions = length(var.shared_image_replication_regions) > 0 ? var.shared_image_replication_regions : [var.location]
 }
@@ -134,6 +144,21 @@ build {
       "$ProgressPreference = 'SilentlyContinue'",
       "Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope LocalMachine -Force"
     ]
+  }
+
+  provisioner "powershell" {
+    environment_vars = [
+      "INSTALL_WINGET_PACKAGES=${var.install_winget_packages}"
+    ]
+    script = "${path.root}/scripts/windows/install-winget.ps1"
+  }
+
+  provisioner "powershell" {
+    environment_vars = [
+      "INSTALL_WINGET_PACKAGES=${var.install_winget_packages}",
+      "WINGET_PACKAGE_IDS=${join(\"|\", var.winget_package_ids)}"
+    ]
+    script = "${path.root}/scripts/windows/install-winget-packages.ps1"
   }
 
   provisioner "powershell" {
