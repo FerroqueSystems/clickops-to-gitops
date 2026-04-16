@@ -2,6 +2,8 @@ data "azurerm_resource_group" "shared" {
   name = var.shared_resource_group_name
 }
 
+data "azurerm_client_config" "current" {}
+
 data "azurerm_virtual_network" "shared" {
   name                = var.shared_virtual_network_name
   resource_group_name = data.azurerm_resource_group.shared.name

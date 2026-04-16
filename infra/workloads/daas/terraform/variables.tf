@@ -97,6 +97,68 @@ variable "hosting_connection_name" {
   default     = "demo-shared-hosting-connection"
 }
 
+variable "hosting_connection_resource_pool_name" {
+  description = "Optional Citrix Azure hosting connection resource pool name. Defaults to <hosting_connection_name>-pool."
+  type        = string
+  default     = null
+}
+
+variable "hosting_connection_authentication_mode" {
+  description = "Citrix Azure hosting connection authentication mode."
+  type        = string
+  default     = "SystemAssignedManagedIdentity"
+
+  validation {
+    condition     = contains(["AppClientSecret", "UserAssignedManagedIdentities", "SystemAssignedManagedIdentity"], var.hosting_connection_authentication_mode)
+    error_message = "hosting_connection_authentication_mode must be AppClientSecret, UserAssignedManagedIdentities, or SystemAssignedManagedIdentity."
+  }
+}
+
+variable "hosting_connection_proxy_hypervisor_traffic_through_connector" {
+  description = "Whether Citrix should proxy Azure hypervisor traffic through the Cloud Connectors."
+  type        = bool
+  default     = true
+}
+
+variable "hosting_connection_subnet_roles" {
+  description = "Subnet roles exposed through the Citrix Azure hosting connection resource pool."
+  type        = list(string)
+  default     = ["management", "server"]
+
+  validation {
+    condition = alltrue([
+      for role in var.hosting_connection_subnet_roles :
+      contains(["management", "server", "client"], role)
+    ])
+    error_message = "hosting_connection_subnet_roles entries must be one of management, server, or client."
+  }
+}
+
+variable "azure_active_directory_id" {
+  description = "Optional Azure tenant ID override for the Citrix Azure hosting connection. Defaults to the authenticated azurerm tenant."
+  type        = string
+  default     = null
+}
+
+variable "hosting_connection_application_id" {
+  description = "Application ID used when the Citrix Azure hosting connection does not use system-assigned managed identity."
+  type        = string
+  default     = null
+}
+
+variable "hosting_connection_application_secret" {
+  description = "Application secret used when the Citrix Azure hosting connection authentication mode is AppClientSecret."
+  type        = string
+  sensitive   = true
+  default     = null
+}
+
+variable "hosting_connection_application_secret_expiration_date" {
+  description = "Optional expiration date for the hosting connection application secret in YYYY-MM-DD format."
+  type        = string
+  default     = null
+}
+
 variable "cloud_connector_count" {
   description = "Number of static Cloud Connector VMs to plan for."
   type        = number
@@ -231,6 +293,12 @@ variable "cloud_connector_auto_shutdown_timezone" {
   description = "Windows time zone ID used by Azure for Cloud Connector auto-shutdown scheduling."
   type        = string
   default     = "Eastern Standard Time"
+}
+
+variable "cloud_connector_enable_system_assigned_identity" {
+  description = "Whether to enable system-assigned managed identity on the Cloud Connector VMs."
+  type        = bool
+  default     = true
 }
 
 variable "machine_catalogs" {

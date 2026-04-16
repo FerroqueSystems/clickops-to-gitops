@@ -40,21 +40,22 @@ locals {
   EOT
 
   plan = {
-    names               = local.planned_names
-    instance_count      = var.instance_count
-    vm_size             = var.vm_size
-    location            = var.location
-    resource_group_name = var.resource_group_name
-    subnet_role         = var.subnet_role
-    subnet_name         = var.subnet_name
-    subnet_id           = var.subnet_id
-    tags                = var.tags
-    lifecycle           = "static"
-    admin_username      = var.admin_username
-    private_ips         = local.private_ip_addresses_by_index
-    zones               = local.zone_by_index
-    domain_join_enabled = var.enable_domain_join
-    domain_name         = var.domain_name
+    names                            = local.planned_names
+    instance_count                   = var.instance_count
+    vm_size                          = var.vm_size
+    location                         = var.location
+    resource_group_name              = var.resource_group_name
+    subnet_role                      = var.subnet_role
+    subnet_name                      = var.subnet_name
+    subnet_id                        = var.subnet_id
+    tags                             = var.tags
+    lifecycle                        = "static"
+    admin_username                   = var.admin_username
+    private_ips                      = local.private_ip_addresses_by_index
+    zones                            = local.zone_by_index
+    domain_join_enabled              = var.enable_domain_join
+    domain_name                      = var.domain_name
+    system_assigned_identity_enabled = var.enable_system_assigned_identity
   }
 }
 
@@ -88,6 +89,14 @@ resource "azurerm_windows_virtual_machine" "cloud_connector" {
   patch_mode         = "AutomaticByOS"
   provision_vm_agent = true
   zone               = local.zone_by_index[count.index]
+
+  dynamic "identity" {
+    for_each = var.enable_system_assigned_identity ? [1] : []
+
+    content {
+      type = "SystemAssigned"
+    }
+  }
 
   os_disk {
     caching              = "ReadWrite"

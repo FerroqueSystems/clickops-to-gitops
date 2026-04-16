@@ -23,18 +23,22 @@ Rotating layer:
 - `data_shared_infra.tf`: reads the existing Azure resource group, VNet, and subnets
 - `resource_location.tf`: starter plan for the Citrix resource location
   - now creates the Citrix Cloud resource location and exposes its real ID
-- `hosting_connection.tf`: starter plan for the Azure hosting connection
+- `hosting_connection.tf`: creates the Citrix zone, Azure hypervisor, and Azure hypervisor resource pool
 - `cloud_connectors.tf`: static support component plan
   - now provisions Windows Server Cloud Connector VMs, optional AD domain join,
-    WinRM bootstrap, and auto-shutdown schedules
+    WinRM bootstrap, auto-shutdown schedules, and optional system-assigned managed identity
 - `machine_catalogs.tf`: rotating catalog layer keyed by `catalog_generation`
 - `delivery_groups.tf`: stable delivery-group layer that can point to a new catalog generation
 
 ## Notes
 
-- This scaffold now deploys the Azure VM layer for Cloud Connectors and creates
-  the Citrix Cloud resource location. Hosting connection, Cloud Connector
-  registration, and later machine-catalog resources still need follow-on work.
+- This scaffold now deploys the Azure VM layer for Cloud Connectors, creates
+  the Citrix Cloud resource location, and creates the Citrix Azure hosting
+  connection objects.
+- The recommended Azure hosting connection mode is
+  `SystemAssignedManagedIdentity`, which requires system-assigned identities on
+  the Cloud Connector VMs and Azure RBAC that allows those identities to manage
+  the target Azure resources for MCS.
 - The current NetScaler NSGs are lab-oriented and should be reviewed before placing Cloud Connectors or VDAs in these subnets.
 - The `client` subnet should remain ADC-facing. Use `management` for static support components and `server` for rotating machine catalogs after the NSGs are adjusted for DaaS traffic.
 

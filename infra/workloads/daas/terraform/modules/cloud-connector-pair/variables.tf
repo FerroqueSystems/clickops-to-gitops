@@ -111,3 +111,8 @@ variable "auto_shutdown_time" {
 variable "auto_shutdown_timezone" {
   type = string
 }
+
+variable "enable_system_assigned_identity" {
+  type    = bool
+  default = true
+}

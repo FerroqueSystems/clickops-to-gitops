@@ -17,3 +17,10 @@ output "virtual_machine_ids" {
 output "private_ip_addresses" {
   value = azurerm_network_interface.cloud_connector[*].private_ip_address
 }
+
+output "principal_ids" {
+  value = [
+    for vm in azurerm_windows_virtual_machine.cloud_connector :
+    try(vm.identity[0].principal_id, null)
+  ]
+}

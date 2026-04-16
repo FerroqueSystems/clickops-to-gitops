@@ -25,8 +25,28 @@ output "resource_location_name" {
 }
 
 output "hosting_connection_plan" {
-  description = "Starter plan object for the Citrix Azure hosting connection."
+  description = "Citrix Azure hosting connection details."
   value       = local.hosting_connection_plan
+}
+
+output "zone_id" {
+  description = "Citrix DaaS zone ID associated with the resource location and hosting connection."
+  value       = citrix_zone.this.id
+}
+
+output "zone_name" {
+  description = "Citrix DaaS zone name associated with the resource location and hosting connection."
+  value       = citrix_zone.this.name
+}
+
+output "hosting_connection_hypervisor_id" {
+  description = "Citrix Azure hypervisor ID."
+  value       = citrix_azure_hypervisor.this.id
+}
+
+output "hosting_connection_resource_pool_id" {
+  description = "Citrix Azure hypervisor resource pool ID. This is the object machine catalogs will use."
+  value       = citrix_azure_hypervisor_resource_pool.this.id
 }
 
 output "cloud_connectors_plan" {
@@ -47,6 +67,11 @@ output "cloud_connector_private_ips" {
 output "cloud_connector_vm_ids" {
   description = "Azure resource IDs for the deployed Cloud Connector VMs."
   value       = module.cloud_connectors.virtual_machine_ids
+}
+
+output "cloud_connector_principal_ids" {
+  description = "Azure system-assigned managed identity principal IDs for the deployed Cloud Connector VMs."
+  value       = module.cloud_connectors.principal_ids
 }
 
 output "cloud_connector_ansible_inventory" {
