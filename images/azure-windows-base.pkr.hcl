@@ -17,6 +17,7 @@ variable "location" {
 
 variable "build_resource_group_name" {
   type = string
+  default = null
 }
 
 variable "gallery_resource_group_name" {
@@ -100,7 +101,7 @@ source "azure-arm" "windows" {
   use_azure_cli_auth = true
 
   subscription_id = var.subscription_id
-  location        = var.location
+  location        = var.build_resource_group_name == null ? var.location : null
   vm_size         = var.vm_size
   os_type         = "Windows"
 
