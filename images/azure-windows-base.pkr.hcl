@@ -201,7 +201,22 @@ build {
     environment_vars = [
       "INSTALL_CITRIX_VDA=${var.install_citrix_vda}",
       "CITRIX_VDA_INSTALLER_URL=${var.citrix_vda_installer_url}",
-      "CITRIX_VDA_INSTALLER_ARGS=${var.citrix_vda_installer_args}"
+      "CITRIX_VDA_INSTALLER_ARGS=${var.citrix_vda_installer_args}",
+      "CITRIX_VDA_INSTALL_PHASE=initial"
+    ]
+    script = "${path.root}/scripts/windows/install-citrix-vda.ps1"
+  }
+
+  provisioner "windows-restart" {
+    restart_timeout = "45m"
+  }
+
+  provisioner "powershell" {
+    environment_vars = [
+      "INSTALL_CITRIX_VDA=${var.install_citrix_vda}",
+      "CITRIX_VDA_INSTALLER_URL=${var.citrix_vda_installer_url}",
+      "CITRIX_VDA_INSTALLER_ARGS=${var.citrix_vda_installer_args}",
+      "CITRIX_VDA_INSTALL_PHASE=resume"
     ]
     script = "${path.root}/scripts/windows/install-citrix-vda.ps1"
   }
