@@ -8,6 +8,13 @@ enable_keyvault          = false
 enable_identity_entra    = false
 enable_adm_agent         = false
 enable_compute_gallery   = true
+enable_artifact_storage  = true
+
+artifact_storage_account_name             = "stclickopsdemoimg"
+artifact_storage_container_name           = "ctxsw"
+artifact_storage_account_tier             = "Standard"
+artifact_storage_account_replication_type = "LRS"
+artifact_storage_access_tier              = "Hot"
 
 compute_gallery_name        = "cgclickopsdemo"
 compute_gallery_description = "Compute Gallery for Citrix base images"
@@ -30,4 +37,9 @@ compute_gallery_image_definitions = {
 compute_gallery_tags = {
   Environment = "demo"
   Purpose     = "citrix-image-gallery"
+}
+
+artifact_storage_tags = {
+  Environment = "demo"
+  Purpose     = "citrix-image-artifacts"
 }

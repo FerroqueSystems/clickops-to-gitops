@@ -108,6 +108,21 @@ variable "citrix_vda_installer_args" {
   default = ""
 }
 
+variable "run_citrix_optimizer" {
+  type    = bool
+  default = false
+}
+
+variable "citrix_optimizer_zip_url" {
+  type    = string
+  default = ""
+}
+
+variable "citrix_optimizer_template_name" {
+  type    = string
+  default = ""
+}
+
 variable "prepare_for_citrix_mcs" {
   type    = bool
   default = true
@@ -189,6 +204,15 @@ build {
       "CITRIX_VDA_INSTALLER_ARGS=${var.citrix_vda_installer_args}"
     ]
     script = "${path.root}/scripts/windows/install-citrix-vda.ps1"
+  }
+
+  provisioner "powershell" {
+    environment_vars = [
+      "RUN_CITRIX_OPTIMIZER=${var.run_citrix_optimizer}",
+      "CITRIX_OPTIMIZER_ZIP_URL=${var.citrix_optimizer_zip_url}",
+      "CITRIX_OPTIMIZER_TEMPLATE_NAME=${var.citrix_optimizer_template_name}"
+    ]
+    script = "${path.root}/scripts/windows/run-citrix-optimizer.ps1"
   }
 
   provisioner "powershell" {

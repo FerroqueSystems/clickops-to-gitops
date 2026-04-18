@@ -19,6 +19,10 @@ install_citrix_vda        = false
 citrix_vda_installer_url  = ""
 citrix_vda_installer_args = ""
 
+run_citrix_optimizer         = false
+citrix_optimizer_zip_url     = ""
+citrix_optimizer_template_name = "Citrix_Windows_11_2009.xml"
+
 prepare_for_citrix_mcs = true
 
 managed_image_tags = {
