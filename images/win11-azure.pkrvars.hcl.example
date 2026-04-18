@@ -12,16 +12,14 @@ azure_imgoffer     = "windows-11"
 azure_imgsku       = "win11-25h2-pro"
 azure_imgversion   = "latest"
 
-install_winget_packages = true
-winget_package_ids = [
-  "Microsoft.Teams",
-  "SlackTechnologies.Slack",
-  "Microsoft.VisualStudioCode",
-  "Google.Chrome",
-  "Microsoft.Edge",
-  "Notepad++.Notepad++",
-  "Microsoft.Office",
-]
+install_chocolatey_packages = false
+chocolatey_packages         = []
+
+install_citrix_vda        = false
+citrix_vda_installer_url  = ""
+citrix_vda_installer_args = ""
+
+prepare_for_citrix_mcs = true
 
 managed_image_tags = {
   Environment = "demo"

@@ -83,14 +83,34 @@ variable "managed_image_tags" {
   default = {}
 }
 
-variable "install_winget_packages" {
+variable "install_chocolatey_packages" {
   type    = bool
   default = false
 }
 
-variable "winget_package_ids" {
+variable "chocolatey_packages" {
   type    = list(string)
   default = []
+}
+
+variable "install_citrix_vda" {
+  type    = bool
+  default = false
+}
+
+variable "citrix_vda_installer_url" {
+  type    = string
+  default = ""
+}
+
+variable "citrix_vda_installer_args" {
+  type    = string
+  default = ""
+}
+
+variable "prepare_for_citrix_mcs" {
+  type    = bool
+  default = true
 }
 
 locals {
@@ -149,17 +169,33 @@ build {
 
   provisioner "powershell" {
     environment_vars = [
-      "INSTALL_WINGET_PACKAGES=${var.install_winget_packages}"
+      "INSTALL_CHOCOLATEY_PACKAGES=${var.install_chocolatey_packages}"
     ]
-    script = "${path.root}/scripts/windows/install-winget.ps1"
+    script = "${path.root}/scripts/windows/install-chocolatey.ps1"
   }
 
   provisioner "powershell" {
     environment_vars = [
-      "INSTALL_WINGET_PACKAGES=${var.install_winget_packages}",
-      "WINGET_PACKAGE_IDS=${join("|", var.winget_package_ids)}"
+      "INSTALL_CHOCOLATEY_PACKAGES=${var.install_chocolatey_packages}",
+      "CHOCOLATEY_PACKAGES=${join(",", var.chocolatey_packages)}"
     ]
-    script = "${path.root}/scripts/windows/install-winget-packages.ps1"
+    script = "${path.root}/scripts/windows/install-chocolatey-packages.ps1"
+  }
+
+  provisioner "powershell" {
+    environment_vars = [
+      "INSTALL_CITRIX_VDA=${var.install_citrix_vda}",
+      "CITRIX_VDA_INSTALLER_URL=${var.citrix_vda_installer_url}",
+      "CITRIX_VDA_INSTALLER_ARGS=${var.citrix_vda_installer_args}"
+    ]
+    script = "${path.root}/scripts/windows/install-citrix-vda.ps1"
+  }
+
+  provisioner "powershell" {
+    environment_vars = [
+      "PREPARE_FOR_CITRIX_MCS=${var.prepare_for_citrix_mcs}"
+    ]
+    script = "${path.root}/scripts/windows/prepare-citrix-master-image.ps1"
   }
 
   provisioner "powershell" {

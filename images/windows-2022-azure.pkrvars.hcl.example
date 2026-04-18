@@ -11,8 +11,14 @@ azure_imgoffer     = "WindowsServer"
 azure_imgsku       = "2022-datacenter-azure-edition"
 azure_imgversion   = "latest"
 
-install_winget_packages = false
-winget_package_ids      = []
+install_chocolatey_packages = false
+chocolatey_packages         = []
+
+install_citrix_vda        = false
+citrix_vda_installer_url  = ""
+citrix_vda_installer_args = ""
+
+prepare_for_citrix_mcs = true
 
 managed_image_tags = {
   Environment = "demo"
