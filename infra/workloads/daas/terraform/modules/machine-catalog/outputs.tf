@@ -2,6 +2,10 @@ output "catalog_name" {
   value = local.catalog_name
 }
 
+output "catalog_id" {
+  value = citrix_machine_catalog.this.id
+}
+
 output "delivery_group_name" {
   value = var.delivery_group_name
 }

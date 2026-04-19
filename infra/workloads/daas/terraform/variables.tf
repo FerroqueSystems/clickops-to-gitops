@@ -31,6 +31,11 @@ variable "shared_virtual_network_name" {
   default     = "terraform-virtual-network"
 }
 
+variable "compute_gallery_name" {
+  description = "Azure Compute Gallery name that stores the master image definitions used by Citrix machine catalogs."
+  type        = string
+}
+
 variable "management_subnet_name" {
   description = "Existing management subnet name."
   type        = string
@@ -307,6 +312,7 @@ variable "machine_catalogs" {
     subnet_role           = string
     session_type          = string
     image_definition_name = string
+    image_version         = string
     machine_count         = number
     vm_size               = string
     delivery_group_name   = string
@@ -327,6 +333,14 @@ variable "machine_catalogs" {
       contains(["single_session", "multi_session"], catalog.session_type)
     ])
     error_message = "Each machine catalog session_type must be single_session or multi_session."
+  }
+
+  validation {
+    condition = alltrue([
+      for catalog in values(var.machine_catalogs) :
+      trimspace(catalog.image_version) != ""
+    ])
+    error_message = "Each machine catalog image_version must be set to an Azure Compute Gallery image version such as 1.0.0."
   }
 }
 
