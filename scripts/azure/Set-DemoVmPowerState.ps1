@@ -4,7 +4,10 @@ param(
     [ValidateSet("Start", "Stop")]
     [string]$Action,
 
-    [string]$ResourceGroupName = "rg-clickops-gitops-demo",
+    [string[]]$ResourceGroupNames = @(
+        "rg-clickops-gitops-demo",
+        "rg-clickops-gitops-demo-catalogs"
+    ),
 
     [string]$SubscriptionId,
 
@@ -25,8 +28,8 @@ function Get-StartPriority {
         '^ad-dc-' { return 20 }
         '^terraform-netscaler-agent$' { return 30 }
         '^ctx-cc-' { return 40 }
-        '^terraform-ubuntu-bastion-machine$' { return 50 }
         default { return 50 }
+        '^terraform-ubuntu-bastion-machine$' { return 60 }
     }
 }
 
@@ -37,12 +40,12 @@ function Get-StopPriority {
     )
 
     switch -Regex ($VmName) {
-        '^terraform-ubuntu-bastion-machine$' { return 10 }
+        default { return 10 }
         '^ctx-cc-' { return 20 }
         '^terraform-netscaler-agent$' { return 30 }
         '^ad-dc-' { return 40 }
         '^terraform-adc-machine-node-' { return 50 }
-        default { return 50 }
+        '^terraform-ubuntu-bastion-machine$' { return 60 }
     }
 }
 
@@ -64,16 +67,26 @@ if ($SubscriptionId) {
     az account set --subscription $SubscriptionId | Out-Null
 }
 
-$vmJson = az vm list `
-    --resource-group $ResourceGroupName `
-    --show-details `
-    --query "[].{name:name,powerState:powerState}" `
-    --output json
+$vms = foreach ($resourceGroupName in $ResourceGroupNames) {
+    $vmJson = az vm list `
+        --resource-group $resourceGroupName `
+        --show-details `
+        --query "[].{name:name,powerState:powerState}" `
+        --output json
 
-$vms = $vmJson | ConvertFrom-Json
+    $resourceGroupVms = $vmJson | ConvertFrom-Json
+
+    foreach ($vm in $resourceGroupVms) {
+        [PSCustomObject]@{
+            name              = $vm.name
+            powerState        = $vm.powerState
+            resourceGroupName = $resourceGroupName
+        }
+    }
+}
 
 if (-not $vms) {
-    Write-Host "No VMs found in resource group '$ResourceGroupName'."
+    Write-Host ("No VMs found in resource groups: {0}." -f ($ResourceGroupNames -join ", "))
     exit 0
 }
 
@@ -88,14 +101,14 @@ else {
 
 $desiredPowerState = Get-DesiredPowerState -RequestedAction $Action
 
-Write-Host "$Action order for resource group '$ResourceGroupName':"
+Write-Host ("{0} order for resource groups: {1}" -f $Action, ($ResourceGroupNames -join ", "))
 $orderedVms | ForEach-Object {
-    Write-Host (" - {0} ({1})" -f $_.name, $_.powerState)
+    Write-Host (" - {0} [{1}] ({2})" -f $_.name, $_.resourceGroupName, $_.powerState)
 }
 
 foreach ($vm in $orderedVms) {
     if ($WhatIf) {
-        Write-Host ("[WhatIf] {0} {1}" -f $Action, $vm.name)
+        Write-Host ("[WhatIf] {0} {1} [{2}]" -f $Action, $vm.name, $vm.resourceGroupName)
         continue
     }
 
@@ -110,19 +123,19 @@ foreach ($vm in $orderedVms) {
     }
 
     if ($Action -eq "Start") {
-        Write-Host ("Starting {0}..." -f $vm.name)
-        az vm start --resource-group $ResourceGroupName --name $vm.name | Out-Null
+        Write-Host ("Starting {0} in {1}..." -f $vm.name, $vm.resourceGroupName)
+        az vm start --resource-group $vm.resourceGroupName --name $vm.name | Out-Null
     }
     else {
-        Write-Host ("Deallocating {0}..." -f $vm.name)
-        az vm deallocate --resource-group $ResourceGroupName --name $vm.name | Out-Null
+        Write-Host ("Deallocating {0} in {1}..." -f $vm.name, $vm.resourceGroupName)
+        az vm deallocate --resource-group $vm.resourceGroupName --name $vm.name | Out-Null
     }
 
     $currentPowerState = $null
     do {
         Start-Sleep -Seconds 10
         $instanceViewJson = az vm get-instance-view `
-            --resource-group $ResourceGroupName `
+            --resource-group $vm.resourceGroupName `
             --name $vm.name `
             --query "instanceView.statuses[?starts_with(code, 'PowerState/')].displayStatus | [0]" `
             --output tsv
@@ -133,4 +146,4 @@ foreach ($vm in $orderedVms) {
     while ($currentPowerState -ne $desiredPowerState)
 }
 
-Write-Host ("Completed {0} sequence for resource group '{1}'." -f $Action.ToLowerInvariant(), $ResourceGroupName)
+Write-Host ("Completed {0} sequence for resource groups: {1}" -f $Action.ToLowerInvariant(), ($ResourceGroupNames -join ", "))
