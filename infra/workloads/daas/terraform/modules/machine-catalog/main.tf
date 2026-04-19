@@ -24,9 +24,11 @@ resource "citrix_image_definition" "this" {
 }
 
 resource "citrix_image_version" "this" {
-  image_definition = citrix_image_definition.this.id
-  version_number   = var.image_version
-  description      = format("Prepared image version %s for %s", var.image_version, local.prepared_image_definition_name)
+  image_definition         = citrix_image_definition.this.id
+  hypervisor               = var.hypervisor_id
+  hypervisor_resource_pool = var.hypervisor_resource_pool_id
+  version_number           = var.image_version
+  description              = format("Prepared image version %s for %s", var.image_version, local.prepared_image_definition_name)
 
   azure_image_specs = {
     service_offering = var.vm_size
