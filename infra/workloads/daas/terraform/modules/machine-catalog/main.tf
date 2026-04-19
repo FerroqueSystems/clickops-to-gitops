@@ -15,10 +15,12 @@ locals {
 }
 
 resource "citrix_image_definition" "this" {
-  name            = local.prepared_image_definition_name
-  description     = format("Prepared image definition for %s", var.image_definition_name)
-  os_type         = "Windows"
-  session_support = local.session_support
+  name                     = local.prepared_image_definition_name
+  description              = format("Prepared image definition for %s", var.image_definition_name)
+  os_type                  = "Windows"
+  session_support          = local.session_support
+  hypervisor               = var.hypervisor_id
+  hypervisor_resource_pool = var.hypervisor_resource_pool_id
 }
 
 resource "citrix_image_version" "this" {
