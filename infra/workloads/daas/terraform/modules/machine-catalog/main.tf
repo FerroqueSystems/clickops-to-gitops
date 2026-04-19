@@ -61,6 +61,12 @@ resource "citrix_machine_catalog" "this" {
     hypervisor               = var.hypervisor_id
     hypervisor_resource_pool = var.hypervisor_resource_pool_id
     identity_type            = "ActiveDirectory"
+    network_mapping = [
+      {
+        network        = var.subnet_name
+        network_device = "0"
+      }
+    ]
 
     machine_domain_identity = {
       domain                   = var.domain_name
