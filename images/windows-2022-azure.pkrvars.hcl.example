@@ -20,7 +20,7 @@ citrix_vda_installer_args = ""
 
 run_citrix_optimizer          = false
 citrix_optimizer_zip_url      = ""
-citrix_optimizer_template_name = "Citrix_Windows_Server_2022.xml"
+citrix_optimizer_template_name = "Citrix_Windows_Server_2022_2009.xml"
 
 prepare_for_citrix_mcs = true
 
