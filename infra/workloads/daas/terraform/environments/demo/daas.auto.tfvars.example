@@ -5,6 +5,8 @@ compute_gallery_name      = "cgclickopsdemo"
 shared_resource_group_name = "rg-clickops-gitops-demo"
 # Citrix MCS should place catalog-created VDAs and related Azure artifacts in a
 # dedicated resource group instead of the shared platform resource group.
+# Terraform will grant the Cloud Connector managed identities Contributor on
+# this resource group automatically.
 machine_catalog_resource_group_name = "rg-clickops-gitops-demo-catalogs"
 shared_virtual_network_name = "terraform-virtual-network"
 management_subnet_name    = "terraform-management-subnet"
@@ -36,6 +38,10 @@ cloud_connector_private_ip_addresses = [
 cloud_connector_enable_domain_join   = true
 cloud_connector_domain_name          = "clickops.demo"
 cloud_connector_domain_join_username = "CLICKOPS\\localadmin"
+# Preferred for machine catalogs: create or import a Citrix service account in
+# Web Studio and set its ID here so MCS uses the stored credential instead of an
+# inline password during catalog creation.
+# machine_catalog_domain_service_account_id = "replace-with-citrix-service-account-id"
 cloud_connector_auto_shutdown_enabled = true
 cloud_connector_auto_shutdown_time    = "1800"
 cloud_connector_auto_shutdown_timezone = "Eastern Standard Time"

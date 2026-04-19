@@ -24,10 +24,13 @@ module "machine_catalogs" {
   domain_join_username        = var.cloud_connector_domain_join_username
   domain_join_password        = var.cloud_connector_domain_join_password
   domain_join_ou_path         = var.cloud_connector_domain_join_ou_path
+  domain_service_account_id   = var.machine_catalog_domain_service_account_id
   delivery_group_name         = each.value.delivery_group_name
   tags = merge(var.tags, {
     Lifecycle          = "rotating"
     RotationGeneration = var.catalog_generation
     Role               = "machine-catalog"
   })
+
+  depends_on = [azurerm_role_assignment.cloud_connector_machine_catalog_rg_contributor]
 }

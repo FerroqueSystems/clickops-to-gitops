@@ -93,6 +93,11 @@ variable "domain_join_ou_path" {
   default = null
 }
 
+variable "domain_service_account_id" {
+  type    = string
+  default = null
+}
+
 variable "delivery_group_name" {
   type = string
 }

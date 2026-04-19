@@ -26,6 +26,10 @@ output "session_type" {
   value = var.session_type
 }
 
+output "machine_count" {
+  value = var.machine_count
+}
+
 output "plan" {
   value = local.plan
 }

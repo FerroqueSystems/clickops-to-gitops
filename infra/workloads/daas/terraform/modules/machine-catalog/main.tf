@@ -71,8 +71,9 @@ resource "citrix_machine_catalog" "this" {
     machine_domain_identity = {
       domain                   = var.domain_name
       domain_ou                = var.domain_join_ou_path
-      service_account          = local.service_account_username
-      service_account_password = var.domain_join_password
+      service_account_id       = var.domain_service_account_id
+      service_account          = var.domain_service_account_id == null ? local.service_account_username : null
+      service_account_password = var.domain_service_account_id == null ? var.domain_join_password : null
     }
 
     azure_machine_config = {
@@ -97,8 +98,8 @@ resource "citrix_machine_catalog" "this" {
 
   lifecycle {
     precondition {
-      condition     = trimspace(var.domain_join_password) != ""
-      error_message = "domain_join_password must be set to create Active Directory-backed Citrix machine catalogs."
+      condition     = var.domain_service_account_id != null || trimspace(var.domain_join_password) != ""
+      error_message = "Set either domain_service_account_id or domain_join_password to create Active Directory-backed Citrix machine catalogs."
     }
   }
 }
@@ -125,6 +126,7 @@ locals {
     vm_size                        = var.vm_size
     domain_name                    = var.domain_name
     domain_join_username           = var.domain_join_username
+    domain_service_account_id      = var.domain_service_account_id
     service_account_username       = local.service_account_username
     location                       = var.location
     image_resource_group_name      = var.image_resource_group_name

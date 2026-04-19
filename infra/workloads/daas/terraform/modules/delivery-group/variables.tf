@@ -10,8 +10,16 @@ variable "delivery_group_name" {
   type = string
 }
 
+variable "machine_catalog_id" {
+  type = string
+}
+
 variable "machine_catalog_name" {
   type = string
+}
+
+variable "machine_count" {
+  type = number
 }
 
 variable "session_type" {

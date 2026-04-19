@@ -288,6 +288,12 @@ variable "cloud_connector_domain_join_ou_path" {
   default     = null
 }
 
+variable "machine_catalog_domain_service_account_id" {
+  description = "Optional Citrix service account ID for machine catalog AD machine account creation. When set, machine catalogs use this stored Citrix service account instead of inline domain credentials."
+  type        = string
+  default     = null
+}
+
 variable "cloud_connector_auto_shutdown_enabled" {
   description = "Whether to enable daily auto-shutdown for Cloud Connector VMs."
   type        = bool
