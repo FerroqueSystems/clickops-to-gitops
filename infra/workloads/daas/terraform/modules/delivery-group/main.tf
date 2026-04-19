@@ -1,3 +1,11 @@
+terraform {
+  required_providers {
+    citrix = {
+      source = "citrix/citrix"
+    }
+  }
+}
+
 resource "citrix_delivery_group" "this" {
   name        = var.delivery_group_name
   description = format("Delivery group for %s generation %s", var.logical_name, var.generation)
