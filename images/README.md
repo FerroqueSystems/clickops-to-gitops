@@ -58,7 +58,7 @@ For Citrix images, add the VDA installer explicitly as well:
 ```hcl
 install_citrix_vda        = true
 citrix_vda_installer_url  = "https://<your-storage-or-artifact-location>/VDAWorkstationSetup_2402.exe"
-citrix_vda_installer_args = "/quiet /controllers \"\" /enable_hdx_ports /noresume /noreboot /mastermcsimage"
+citrix_vda_installer_args = "/quiet /controllers \"ctx-cc-demo-01.clickops.demo ctx-cc-demo-02.clickops.demo\" /enable_hdx_ports /noresume /noreboot /mastermcsimage /xendesktopcloud /includeadditional \"Citrix MCS IODriver\""
 ```
 
 And add Citrix Optimizer from blob storage if desired:
@@ -71,6 +71,14 @@ citrix_optimizer_template_name = "Citrix_Windows_11_2009.xml"
 
 The exact VDA installer binary and command line should match your Citrix release
 and whether the image is single-session or multi-session.
+
+For Citrix image management and prepared-image catalogs, Citrix requires:
+- VDA version 2311 or later
+- the MCS I/O driver explicitly installed with `/includeadditional "Citrix MCS IODriver"`
+
+Sources:
+- https://docs.citrix.com/en-us/citrix-virtual-apps-desktops/2411/install-configure/image-management.html
+- https://docs.citrix.com/en-us/citrix-virtual-apps-desktops/2507-ltsr/install-configure/install-vdas.html
 
 ## Artifact Storage
 

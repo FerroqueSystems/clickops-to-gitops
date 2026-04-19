@@ -16,6 +16,11 @@ if ([string]::IsNullOrWhiteSpace($env:CITRIX_VDA_INSTALLER_ARGS)) {
     throw "CITRIX_VDA_INSTALLER_ARGS must be set when INSTALL_CITRIX_VDA=true."
 }
 
+$normalizedInstallerArgs = $env:CITRIX_VDA_INSTALLER_ARGS.ToLowerInvariant()
+if ($normalizedInstallerArgs -notmatch 'includeadditional.+citrix mcs iodriver') {
+    throw "CITRIX_VDA_INSTALLER_ARGS must include /includeadditional ""Citrix MCS IODriver"" for Citrix image management catalog builds."
+}
+
 $installerRoot = "C:\Temp\PackerInstallers"
 New-Item -ItemType Directory -Path $installerRoot -Force | Out-Null
 
