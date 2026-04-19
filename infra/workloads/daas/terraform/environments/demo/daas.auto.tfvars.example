@@ -3,6 +3,8 @@ environment_name          = "demo"
 catalog_generation        = "2026-03"
 compute_gallery_name      = "cgclickopsdemo"
 shared_resource_group_name = "rg-clickops-gitops-demo"
+# Citrix MCS should place catalog-created VDAs and related Azure artifacts in a
+# dedicated resource group instead of the shared platform resource group.
 machine_catalog_resource_group_name = "rg-clickops-gitops-demo-catalogs"
 shared_virtual_network_name = "terraform-virtual-network"
 management_subnet_name    = "terraform-management-subnet"
@@ -16,7 +18,9 @@ resource_location_name    = "demo-canadacentral"
 # existing_resource_location_name = "demo-canadacentral"
 hosting_connection_name   = "demo-canadacentral-shared"
 hosting_connection_authentication_mode = "SystemAssignedManagedIdentity"
-hosting_connection_subnet_roles = ["management", "server"]
+# Keep the hosting unit narrow for MCS. Cloud Connectors are static Azure VMs
+# and do not need the management subnet exposed through the Citrix hosting unit.
+hosting_connection_subnet_roles = ["server"]
 citrix_cloud_environment  = "Production"
 
 cloud_connector_count      = 2
@@ -64,6 +68,9 @@ tags = {
 }
 
 # Review the current management and server subnet NSGs before deploying Cloud Connectors or VDAs.
+# Catalog VMs stay on the same VNet/subnet even when they are created in a
+# different Azure resource group. Resource groups are management boundaries, not
+# network boundaries.
 # Secrets are provided via environment variables or GitHub Secrets:
 # TF_VAR_cloud_connector_admin_password
 # TF_VAR_cloud_connector_domain_join_password

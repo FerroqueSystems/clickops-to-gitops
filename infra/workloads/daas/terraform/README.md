@@ -41,6 +41,12 @@ Rotating layer:
   `SystemAssignedManagedIdentity`, which requires system-assigned identities on
   the Cloud Connector VMs and Azure RBAC that allows those identities to manage
   the target Azure resources for MCS.
+- Keep the Citrix hosting unit scoped to the `server` subnet unless you have a
+  clear MCS requirement for additional subnets. Cloud Connectors are deployed as
+  static Azure VMs and do not need to be provisioned through the hosting unit.
+- Use a dedicated Azure resource group for machine catalog VDA resources. The
+  shared resource group can continue to host the gallery, hosting connection
+  dependencies, and Cloud Connectors.
 - The current NetScaler NSGs are lab-oriented and should be reviewed before placing Cloud Connectors or VDAs in these subnets.
 - The `client` subnet should remain ADC-facing. Use `management` for static support components and `server` for rotating machine catalogs after the NSGs are adjusted for DaaS traffic.
 

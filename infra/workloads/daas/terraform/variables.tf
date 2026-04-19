@@ -134,7 +134,7 @@ variable "hosting_connection_proxy_hypervisor_traffic_through_connector" {
 variable "hosting_connection_subnet_roles" {
   description = "Subnet roles exposed through the Citrix Azure hosting connection resource pool."
   type        = list(string)
-  default     = ["management", "server"]
+  default     = ["server"]
 
   validation {
     condition = alltrue([
