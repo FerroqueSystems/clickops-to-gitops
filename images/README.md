@@ -49,7 +49,7 @@ install_chocolatey_packages = true
 chocolatey_packages = [
   "googlechrome",
   "vscode",
-  "notepadplusplus"
+  # "notepadplusplus"
 ]
 ```
 
