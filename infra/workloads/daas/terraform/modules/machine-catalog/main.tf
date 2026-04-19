@@ -7,9 +7,10 @@ terraform {
 }
 
 locals {
-  catalog_name        = format("%s-%s-%s", var.environment_name, var.logical_name, var.generation)
-  machine_name_prefix = substr(lower(var.logical_name), 0, 12)
-  session_support     = var.session_type == "single_session" ? "SingleSession" : "MultiSession"
+  catalog_name             = format("%s-%s-%s", var.environment_name, var.logical_name, var.generation)
+  machine_name_prefix      = substr(lower(var.logical_name), 0, 12)
+  session_support          = var.session_type == "single_session" ? "SingleSession" : "MultiSession"
+  service_account_username = trimsuffix(regexreplace(var.domain_join_username, "^.*\\\\", ""), "@${var.domain_name}")
 }
 
 resource "citrix_machine_catalog" "this" {
@@ -28,7 +29,7 @@ resource "citrix_machine_catalog" "this" {
     machine_domain_identity = {
       domain                   = var.domain_name
       domain_ou                = var.domain_join_ou_path
-      service_account          = var.domain_join_username
+      service_account          = local.service_account_username
       service_account_password = var.domain_join_password
     }
 
@@ -82,6 +83,7 @@ locals {
     vm_size                     = var.vm_size
     domain_name                 = var.domain_name
     domain_join_username        = var.domain_join_username
+    service_account_username    = local.service_account_username
     location                    = var.location
     resource_group_name         = var.resource_group_name
     subnet_role                 = var.subnet_role
