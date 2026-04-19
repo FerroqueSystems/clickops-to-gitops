@@ -10,7 +10,7 @@ locals {
   catalog_name             = format("%s-%s-%s", var.environment_name, var.logical_name, var.generation)
   machine_name_prefix      = substr(lower(var.logical_name), 0, 12)
   session_support          = var.session_type == "single_session" ? "SingleSession" : "MultiSession"
-  service_account_username = trimsuffix(regexreplace(var.domain_join_username, "^.*\\\\", ""), "@${var.domain_name}")
+  service_account_username = split("@", reverse(split("\\", var.domain_join_username))[0])[0]
 }
 
 resource "citrix_machine_catalog" "this" {
