@@ -2,6 +2,11 @@ variable "environment_name" {
   type = string
 }
 
+variable "catalog_name_prefix" {
+  type    = string
+  default = "Ferroque"
+}
+
 variable "zone_id" {
   type = string
 }

@@ -7,10 +7,35 @@ terraform {
 }
 
 locals {
-  catalog_name             = format("%s-%s-%s", var.environment_name, var.logical_name, var.generation)
-  machine_name_prefix      = substr(lower(var.logical_name), 0, 12)
-  session_support          = var.session_type == "single_session" ? "SingleSession" : "MultiSession"
-  service_account_username = split("@", reverse(split("\\", var.domain_join_username))[0])[0]
+  prepared_image_definition_name = format("%s-%s", var.catalog_name_prefix, var.image_definition_name)
+  catalog_name                   = format("%s-%s-%s-%s", var.catalog_name_prefix, var.environment_name, var.logical_name, var.generation)
+  machine_name_prefix            = substr(lower(var.logical_name), 0, 12)
+  session_support                = var.session_type == "single_session" ? "SingleSession" : "MultiSession"
+  service_account_username       = split("@", reverse(split("\\", var.domain_join_username))[0])[0]
+}
+
+resource "citrix_image_definition" "this" {
+  name            = local.prepared_image_definition_name
+  description     = format("Prepared image definition for %s", var.image_definition_name)
+  os_type         = "Windows"
+  session_support = local.session_support
+}
+
+resource "citrix_image_version" "this" {
+  image_definition = citrix_image_definition.this.id
+  version_number   = var.image_version
+  description      = format("Prepared image version %s for %s", var.image_version, local.prepared_image_definition_name)
+
+  azure_image_specs = {
+    service_offering = var.vm_size
+    storage_type     = "Standard_LRS"
+    resource_group   = var.resource_group_name
+    gallery_image = {
+      gallery    = var.gallery_name
+      definition = var.image_definition_name
+      version    = var.image_version
+    }
+  }
 }
 
 resource "citrix_machine_catalog" "this" {
@@ -38,13 +63,9 @@ resource "citrix_machine_catalog" "this" {
       use_managed_disks = true
       service_offering  = var.vm_size
 
-      azure_master_image = {
-        resource_group = var.resource_group_name
-        gallery_image = {
-          gallery    = var.gallery_name
-          definition = var.image_definition_name
-          version    = var.image_version
-        }
+      prepared_image = {
+        image_definition = citrix_image_definition.this.id
+        image_version    = citrix_image_version.this.id
       }
     }
 
@@ -66,30 +87,33 @@ resource "citrix_machine_catalog" "this" {
 
 locals {
   plan = {
-    logical_name                = var.logical_name
-    catalog_name                = local.catalog_name
-    catalog_id                  = citrix_machine_catalog.this.id
-    delivery_group_name         = var.delivery_group_name
-    generation                  = var.generation
-    session_type                = var.session_type
-    session_support             = local.session_support
-    zone_id                     = var.zone_id
-    hypervisor_id               = var.hypervisor_id
-    hypervisor_resource_pool_id = var.hypervisor_resource_pool_id
-    gallery_name                = var.gallery_name
-    image_definition_name       = var.image_definition_name
-    image_version               = var.image_version
-    machine_count               = var.machine_count
-    vm_size                     = var.vm_size
-    domain_name                 = var.domain_name
-    domain_join_username        = var.domain_join_username
-    service_account_username    = local.service_account_username
-    location                    = var.location
-    resource_group_name         = var.resource_group_name
-    subnet_role                 = var.subnet_role
-    subnet_name                 = var.subnet_name
-    subnet_id                   = var.subnet_id
-    tags                        = var.tags
-    lifecycle                   = "rotating-managed"
+    logical_name                   = var.logical_name
+    prepared_image_definition_name = local.prepared_image_definition_name
+    prepared_image_definition_id   = citrix_image_definition.this.id
+    prepared_image_version_id      = citrix_image_version.this.id
+    catalog_name                   = local.catalog_name
+    catalog_id                     = citrix_machine_catalog.this.id
+    delivery_group_name            = var.delivery_group_name
+    generation                     = var.generation
+    session_type                   = var.session_type
+    session_support                = local.session_support
+    zone_id                        = var.zone_id
+    hypervisor_id                  = var.hypervisor_id
+    hypervisor_resource_pool_id    = var.hypervisor_resource_pool_id
+    gallery_name                   = var.gallery_name
+    image_definition_name          = var.image_definition_name
+    image_version                  = var.image_version
+    machine_count                  = var.machine_count
+    vm_size                        = var.vm_size
+    domain_name                    = var.domain_name
+    domain_join_username           = var.domain_join_username
+    service_account_username       = local.service_account_username
+    location                       = var.location
+    resource_group_name            = var.resource_group_name
+    subnet_role                    = var.subnet_role
+    subnet_name                    = var.subnet_name
+    subnet_id                      = var.subnet_id
+    tags                           = var.tags
+    lifecycle                      = "rotating-managed"
   }
 }
