@@ -25,6 +25,12 @@ variable "shared_resource_group_name" {
   type        = string
 }
 
+variable "machine_catalog_resource_group_name" {
+  description = "Azure resource group name where Citrix MCS will place catalog VDA VMs and related Azure resources. Defaults to <shared_resource_group_name>-catalogs."
+  type        = string
+  default     = null
+}
+
 variable "shared_virtual_network_name" {
   description = "Existing VNet name shared with the NetScaler deployment."
   type        = string

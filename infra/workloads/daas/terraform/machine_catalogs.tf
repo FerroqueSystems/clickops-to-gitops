@@ -8,8 +8,9 @@ module "machine_catalogs" {
   hypervisor_resource_pool_id = citrix_azure_hypervisor_resource_pool.this.id
   generation                  = var.catalog_generation
   logical_name                = each.key
-  location                    = data.azurerm_resource_group.shared.location
-  resource_group_name         = data.azurerm_resource_group.shared.name
+  location                    = azurerm_resource_group.machine_catalogs.location
+  image_resource_group_name   = data.azurerm_resource_group.shared.name
+  vda_resource_group_name     = azurerm_resource_group.machine_catalogs.name
   gallery_name                = var.compute_gallery_name
   subnet_role                 = each.value.subnet_role
   subnet_name                 = local.subnet_names_by_role[each.value.subnet_role]

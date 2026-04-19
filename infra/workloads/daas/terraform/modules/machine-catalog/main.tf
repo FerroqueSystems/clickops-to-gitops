@@ -23,7 +23,7 @@ resource "citrix_image_definition" "this" {
   hypervisor_resource_pool = var.hypervisor_resource_pool_id
 
   azure_image_definition = {
-    resource_group = var.resource_group_name
+    resource_group = var.image_resource_group_name
     gallery_image = {
       gallery    = var.gallery_name
       definition = var.image_definition_name
@@ -40,7 +40,7 @@ resource "citrix_image_version" "this" {
   azure_image_specs = {
     service_offering = var.vm_size
     storage_type     = "Standard_LRS"
-    resource_group   = var.resource_group_name
+    resource_group   = var.image_resource_group_name
     gallery_image = {
       gallery    = var.gallery_name
       definition = var.image_definition_name
@@ -70,9 +70,10 @@ resource "citrix_machine_catalog" "this" {
     }
 
     azure_machine_config = {
-      storage_type      = "Standard_LRS"
-      use_managed_disks = true
-      service_offering  = var.vm_size
+      storage_type       = "Standard_LRS"
+      use_managed_disks  = true
+      service_offering   = var.vm_size
+      vda_resource_group = var.vda_resource_group_name
 
       prepared_image = {
         image_definition = citrix_image_definition.this.id
@@ -120,7 +121,8 @@ locals {
     domain_join_username           = var.domain_join_username
     service_account_username       = local.service_account_username
     location                       = var.location
-    resource_group_name            = var.resource_group_name
+    image_resource_group_name      = var.image_resource_group_name
+    vda_resource_group_name        = var.vda_resource_group_name
     subnet_role                    = var.subnet_role
     subnet_name                    = var.subnet_name
     subnet_id                      = var.subnet_id

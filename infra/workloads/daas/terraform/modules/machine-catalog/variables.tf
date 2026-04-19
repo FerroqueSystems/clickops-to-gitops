@@ -31,7 +31,11 @@ variable "location" {
   type = string
 }
 
-variable "resource_group_name" {
+variable "image_resource_group_name" {
+  type = string
+}
+
+variable "vda_resource_group_name" {
   type = string
 }
 
