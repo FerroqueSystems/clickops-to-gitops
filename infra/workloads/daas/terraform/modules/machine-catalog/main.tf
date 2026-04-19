@@ -21,6 +21,14 @@ resource "citrix_image_definition" "this" {
   session_support          = local.session_support
   hypervisor               = var.hypervisor_id
   hypervisor_resource_pool = var.hypervisor_resource_pool_id
+
+  azure_image_definition = {
+    resource_group = var.resource_group_name
+    gallery_image = {
+      gallery    = var.gallery_name
+      definition = var.image_definition_name
+    }
+  }
 }
 
 resource "citrix_image_version" "this" {
