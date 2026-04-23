@@ -27,25 +27,56 @@ cloud_connector_auto_shutdown_enabled  = true
 cloud_connector_auto_shutdown_time     = "1800"
 cloud_connector_auto_shutdown_timezone = "Eastern Standard Time"
 
-machine_catalogs = {
-  win11-pooled = {
+catalog_deployments = {
+  win11-pooled-2026-03 = {
+    logical_name          = "win11-pooled"
+    generation            = "2026-03"
     subnet_role           = "server"
     session_type          = "single_session"
     image_definition_name = "win11-25h2-cvad"
-    image_version         = "1.0.0"
-    machine_count         = 10
+    image_version         = "1.0.1"
+    machine_count         = 3
     vm_size               = "Standard_D4s_v5"
     delivery_group_name   = "dg-win11-pooled"
   }
-  ws2022-apps = {
+  win11-pooled-2026-04 = {
+    logical_name          = "win11-pooled"
+    generation            = "2026-04"
+    subnet_role           = "server"
+    session_type          = "single_session"
+    image_definition_name = "win11-25h2-cvad"
+    image_version         = "1.0.2"
+    machine_count         = 5
+    vm_size               = "Standard_D4s_v5"
+    delivery_group_name   = "dg-win11-pooled"
+  }
+  ws2022-apps-2026-03 = {
+    logical_name          = "ws2022-apps"
+    generation            = "2026-03"
     subnet_role           = "server"
     session_type          = "multi_session"
     image_definition_name = "ws2022-cvad-apps"
-    image_version         = "1.0.0"
-    machine_count         = 6
+    image_version         = "1.0.1"
+    machine_count         = 2
     vm_size               = "Standard_D8s_v5"
     delivery_group_name   = "dg-published-apps"
   }
+  ws2022-apps-2026-04 = {
+    logical_name          = "ws2022-apps"
+    generation            = "2026-04"
+    subnet_role           = "server"
+    session_type          = "multi_session"
+    image_definition_name = "ws2022-cvad-apps"
+    image_version         = "1.0.2"
+    machine_count         = 3
+    vm_size               = "Standard_D8s_v5"
+    delivery_group_name   = "dg-published-apps"
+  }
+}
+
+active_delivery_group_catalogs = {
+  win11-pooled = "win11-pooled-2026-03"
+  ws2022-apps  = "ws2022-apps-2026-03"
 }
 
 tags = {

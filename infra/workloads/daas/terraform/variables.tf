@@ -16,7 +16,7 @@ variable "environment_name" {
 }
 
 variable "catalog_generation" {
-  description = "Generation identifier for the rotating machine catalog layer, for example 2026-03."
+  description = "Legacy single-generation identifier for the rotating machine catalog layer, for example 2026-03. Used only when catalog_deployments is empty."
   type        = string
 }
 
@@ -319,7 +319,7 @@ variable "cloud_connector_enable_system_assigned_identity" {
 }
 
 variable "machine_catalogs" {
-  description = "Logical machine catalogs that will be recreated on the monthly cadence."
+  description = "Legacy single-generation machine catalog definition map. Used only when catalog_deployments is empty."
   type = map(object({
     subnet_role           = string
     session_type          = string
@@ -354,6 +354,60 @@ variable "machine_catalogs" {
     ])
     error_message = "Each machine catalog image_version must be set to an Azure Compute Gallery image version such as 1.0.0."
   }
+}
+
+variable "catalog_deployments" {
+  description = "Managed machine catalog deployments. Keep old and new generations side by side here until cutover and retirement are complete."
+  type = map(object({
+    logical_name          = string
+    generation            = string
+    subnet_role           = string
+    session_type          = string
+    image_definition_name = string
+    image_version         = string
+    machine_count         = number
+    vm_size               = string
+    delivery_group_name   = string
+  }))
+  default = {}
+
+  validation {
+    condition = alltrue([
+      for catalog in values(var.catalog_deployments) :
+      contains(["management", "server", "client"], catalog.subnet_role)
+    ])
+    error_message = "Each catalog_deployments subnet_role must be one of management, server, or client."
+  }
+
+  validation {
+    condition = alltrue([
+      for catalog in values(var.catalog_deployments) :
+      contains(["single_session", "multi_session"], catalog.session_type)
+    ])
+    error_message = "Each catalog_deployments session_type must be single_session or multi_session."
+  }
+
+  validation {
+    condition = alltrue([
+      for catalog in values(var.catalog_deployments) :
+      trimspace(catalog.image_version) != ""
+    ])
+    error_message = "Each catalog_deployments image_version must be set to an Azure Compute Gallery image version such as 1.0.0."
+  }
+
+  validation {
+    condition = alltrue([
+      for catalog in values(var.catalog_deployments) :
+      trimspace(catalog.logical_name) != "" && trimspace(catalog.generation) != ""
+    ])
+    error_message = "Each catalog_deployments entry must set logical_name and generation."
+  }
+}
+
+variable "active_delivery_group_catalogs" {
+  description = "Map of logical delivery-group names to the active catalog_deployments key. Use this to cut over explicitly after validation and drain."
+  type        = map(string)
+  default     = {}
 }
 
 variable "tags" {

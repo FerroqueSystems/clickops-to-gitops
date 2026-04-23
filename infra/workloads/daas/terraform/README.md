@@ -15,8 +15,8 @@ Static layer:
 
 Rotating layer:
 - Golden image versions
-- Machine catalogs
-- Catalog cutover into delivery groups
+- Parallel machine catalog generations
+- Explicit catalog cutover into delivery groups
 
 ## File Layout
 
@@ -27,10 +27,9 @@ Rotating layer:
 - `cloud_connectors.tf`: static support component plan
   - now provisions Windows Server Cloud Connector VMs, optional AD domain join,
     WinRM bootstrap, auto-shutdown schedules, and optional system-assigned managed identity
-- `machine_catalogs.tf`: rotating catalog layer keyed by `catalog_generation`
-  - now creates real `citrix_machine_catalog` resources backed by the Azure Compute Gallery image versions
-- `delivery_groups.tf`: stable delivery-group layer that can point to a new catalog generation
-  - still emits the cutover plan only
+- `machine_catalogs.tf`: rotating catalog deployment layer
+  - now supports multiple retained generations side by side, keyed by `catalog_deployments`
+- `delivery_groups.tf`: stable delivery-group layer that points to an explicitly selected active catalog deployment
 
 ## Notes
 
@@ -60,8 +59,8 @@ Rotating layer:
 ## Monthly Rebuild Pattern
 
 1. Refresh the machine image.
-2. Bump `catalog_generation` in the environment tfvars.
-3. Apply the rotating catalog layer.
-4. Validate the new catalog.
-5. Cut over the delivery group mapping.
-6. Remove the old catalog generation.
+2. Add a new `catalog_deployments` entry for the next generation and apply.
+3. Validate the new catalog while `active_delivery_group_catalogs` still points to the old generation.
+4. Put the old delivery targets into drain mode outside Terraform and wait for zero sessions.
+5. Change `active_delivery_group_catalogs` to the new generation and apply.
+6. Remove the old `catalog_deployments` entry in a later apply after shutdown is complete.

@@ -1,3 +1,7 @@
+variable "catalog_deployment_key" {
+  type = string
+}
+
 variable "logical_name" {
   type = string
 }

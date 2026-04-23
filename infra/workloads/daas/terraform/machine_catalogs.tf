@@ -1,13 +1,13 @@
 module "machine_catalogs" {
-  for_each = var.machine_catalogs
+  for_each = local.catalog_deployments_effective
   source   = "./modules/machine-catalog"
 
   environment_name            = var.environment_name
   zone_id                     = citrix_zone.this.id
   hypervisor_id               = citrix_azure_hypervisor.this.id
   hypervisor_resource_pool_id = citrix_azure_hypervisor_resource_pool.this.id
-  generation                  = var.catalog_generation
-  logical_name                = each.key
+  generation                  = each.value.generation
+  logical_name                = each.value.logical_name
   location                    = azurerm_resource_group.machine_catalogs.location
   image_resource_group_name   = data.azurerm_resource_group.shared.name
   vda_resource_group_name     = azurerm_resource_group.machine_catalogs.name
@@ -28,7 +28,7 @@ module "machine_catalogs" {
   delivery_group_name         = each.value.delivery_group_name
   tags = merge(var.tags, {
     Lifecycle          = "rotating"
-    RotationGeneration = var.catalog_generation
+    RotationGeneration = each.value.generation
     Role               = "machine-catalog"
   })
 

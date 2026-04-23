@@ -105,15 +105,20 @@ output "cloud_connector_ansible_inventory" {
 }
 
 output "machine_catalogs_plan" {
-  description = "Starter plan for the rotating machine catalog layer."
+  description = "Managed machine catalog deployments, keyed by catalog_deployments key."
   value = {
     for name, module_ref in module.machine_catalogs :
     name => module_ref.plan
   }
 }
 
+output "active_delivery_group_catalogs" {
+  description = "Explicit delivery-group cutover map from logical_name to active catalog_deployments key."
+  value       = local.active_delivery_group_catalogs_effective
+}
+
 output "delivery_groups_plan" {
-  description = "Starter plan for stable delivery groups that can point to a new catalog generation."
+  description = "Stable delivery groups pointing at the explicitly selected active catalog deployment for each logical workload."
   value = {
     for name, module_ref in module.delivery_groups :
     name => module_ref.plan
@@ -121,11 +126,15 @@ output "delivery_groups_plan" {
 }
 
 output "monthly_rebuild_pattern" {
-  description = "Summary of the intended monthly rebuild split between static and rotating components."
+  description = "Summary of the intended monthly rebuild split between static components, retained catalog generations, and explicit cutover targets."
   value = {
     static_layers   = ["resource_location", "hosting_connection", "cloud_connectors"]
     rotating_layers = ["machine_catalogs"]
     cutover_layers  = ["delivery_groups"]
-    generation      = var.catalog_generation
+    retained_catalog_generations = sort(distinct([
+      for catalog in values(local.catalog_deployments_effective) :
+      catalog.generation
+    ]))
+    active_delivery_group_catalogs = local.active_delivery_group_catalogs_effective
   }
 }
