@@ -1,8 +1,6 @@
-name: Deploy IaC
+name: Deploy IaC (Legacy Manual)
 
 on:
-  push:
-    branches: [ "main" ]
   workflow_dispatch:
 
 jobs:

@@ -1,0 +1,86 @@
+name: Monthly DaaS Apply
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 13 * * 4"
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: monthly-daas-apply
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    if: github.event_name == 'workflow_dispatch' || vars.ENABLE_DAAS_AUTOMATION == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    env:
+      ARM_USE_OIDC: "true"
+      ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+      ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      TFSTATE_RESOURCE_GROUP: ${{ vars.TFSTATE_RESOURCE_GROUP }}
+      TFSTATE_STORAGE_ACCOUNT: ${{ vars.TFSTATE_STORAGE_ACCOUNT }}
+      TFSTATE_CONTAINER: ${{ vars.TFSTATE_CONTAINER }}
+      TF_INPUT: "0"
+      TF_IN_AUTOMATION: "true"
+      TF_VAR_subscription_id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      TF_VAR_citrix_customer_id: ${{ secrets.CITRIX_CUSTOMER_ID }}
+      TF_VAR_citrix_client_id: ${{ secrets.CITRIX_CLIENT_ID }}
+      TF_VAR_citrix_client_secret: ${{ secrets.CITRIX_CLIENT_SECRET }}
+      TF_VAR_cloud_connector_admin_password: ${{ secrets.CLOUD_CONNECTOR_ADMIN_PASSWORD }}
+      TF_VAR_cloud_connector_domain_join_password: ${{ secrets.CLOUD_CONNECTOR_DOMAIN_JOIN_PASSWORD }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Azure Login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - uses: hashicorp/setup-terraform@v3
+
+      - name: Second Thursday Guard
+        id: second_thursday
+        if: github.event_name == 'schedule'
+        shell: bash
+        run: |
+          set -euo pipefail
+          day_of_month=$(date -u +%-d)
+          day_of_week=$(date -u +%u)
+          if [ "$day_of_week" -eq 4 ] && [ "$day_of_month" -ge 8 ] && [ "$day_of_month" -le 14 ]; then
+            echo "should_run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "should_run=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Skip Outside Patch Window
+        if: github.event_name == 'schedule' && steps.second_thursday.outputs.should_run != 'true'
+        run: echo "Scheduled run skipped because today is not the second Thursday of the month."
+
+      - name: Terraform Init, Plan, and Apply (DaaS)
+        if: github.event_name == 'workflow_dispatch' || steps.second_thursday.outputs.should_run == 'true'
+        working-directory: ./infra/workloads/daas/terraform
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f daas.auto.tfvars || {
+            echo "Missing infra/workloads/daas/terraform/daas.auto.tfvars in the branch being executed."
+            exit 1
+          }
+          terraform fmt -check -recursive
+          terraform init \
+            -backend-config="resource_group_name=${TFSTATE_RESOURCE_GROUP}" \
+            -backend-config="storage_account_name=${TFSTATE_STORAGE_ACCOUNT}" \
+            -backend-config="container_name=${TFSTATE_CONTAINER}" \
+            -backend-config="key=infra/workloads/daas/terraform.tfstate"
+          terraform plan -input=false -no-color -lock-timeout=60s -var-file=daas.auto.tfvars -out=daas.tfplan
+          terraform apply -input=false -no-color -auto-approve daas.tfplan
