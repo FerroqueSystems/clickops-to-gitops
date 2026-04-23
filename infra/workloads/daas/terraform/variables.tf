@@ -25,10 +25,21 @@ variable "shared_resource_group_name" {
   type        = string
 }
 
+variable "machine_catalog_resource_group_name" {
+  description = "Azure resource group name where Citrix MCS will place catalog VDA VMs and related Azure resources. Defaults to <shared_resource_group_name>-catalogs."
+  type        = string
+  default     = null
+}
+
 variable "shared_virtual_network_name" {
   description = "Existing VNet name shared with the NetScaler deployment."
   type        = string
   default     = "terraform-virtual-network"
+}
+
+variable "compute_gallery_name" {
+  description = "Azure Compute Gallery name that stores the master image definitions used by Citrix machine catalogs."
+  type        = string
 }
 
 variable "management_subnet_name" {
@@ -123,7 +134,7 @@ variable "hosting_connection_proxy_hypervisor_traffic_through_connector" {
 variable "hosting_connection_subnet_roles" {
   description = "Subnet roles exposed through the Citrix Azure hosting connection resource pool."
   type        = list(string)
-  default     = ["management", "server"]
+  default     = ["server"]
 
   validation {
     condition = alltrue([
@@ -277,6 +288,12 @@ variable "cloud_connector_domain_join_ou_path" {
   default     = null
 }
 
+variable "machine_catalog_domain_service_account_id" {
+  description = "Optional Citrix service account ID for machine catalog AD machine account creation. When set, machine catalogs use this stored Citrix service account instead of inline domain credentials."
+  type        = string
+  default     = null
+}
+
 variable "cloud_connector_auto_shutdown_enabled" {
   description = "Whether to enable daily auto-shutdown for Cloud Connector VMs."
   type        = bool
@@ -307,6 +324,7 @@ variable "machine_catalogs" {
     subnet_role           = string
     session_type          = string
     image_definition_name = string
+    image_version         = string
     machine_count         = number
     vm_size               = string
     delivery_group_name   = string
@@ -327,6 +345,14 @@ variable "machine_catalogs" {
       contains(["single_session", "multi_session"], catalog.session_type)
     ])
     error_message = "Each machine catalog session_type must be single_session or multi_session."
+  }
+
+  validation {
+    condition = alltrue([
+      for catalog in values(var.machine_catalogs) :
+      trimspace(catalog.image_version) != ""
+    ])
+    error_message = "Each machine catalog image_version must be set to an Azure Compute Gallery image version such as 1.0.0."
   }
 }
 

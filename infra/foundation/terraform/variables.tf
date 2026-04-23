@@ -47,6 +47,48 @@ variable "enable_compute_gallery" {
   default     = false
 }
 
+variable "enable_artifact_storage" {
+  description = "Create a blob storage account and private container for image build artifacts such as Citrix VDA installers and Optimizer packages."
+  type        = bool
+  default     = false
+}
+
+variable "artifact_storage_account_name" {
+  description = "Azure Storage account name for image build artifacts. Must be globally unique and use only lowercase letters and numbers."
+  type        = string
+  default     = null
+}
+
+variable "artifact_storage_container_name" {
+  description = "Private blob container name for image build artifacts."
+  type        = string
+  default     = "ctxsw"
+}
+
+variable "artifact_storage_account_tier" {
+  description = "Storage account tier for image build artifacts."
+  type        = string
+  default     = "Standard"
+}
+
+variable "artifact_storage_account_replication_type" {
+  description = "Storage account replication type for image build artifacts."
+  type        = string
+  default     = "LRS"
+}
+
+variable "artifact_storage_access_tier" {
+  description = "Blob access tier for image build artifacts."
+  type        = string
+  default     = "Hot"
+}
+
+variable "artifact_storage_tags" {
+  description = "Tags to apply to the image build artifact storage account."
+  type        = map(string)
+  default     = {}
+}
+
 variable "compute_gallery_name" {
   description = "Azure Compute Gallery name."
   type        = string

@@ -9,6 +9,15 @@ output "shared_infra" {
   }
 }
 
+output "machine_catalog_resource_group" {
+  description = "Dedicated Azure resource group where Citrix MCS places catalog VDA resources."
+  value = {
+    name     = azurerm_resource_group.machine_catalogs.name
+    location = azurerm_resource_group.machine_catalogs.location
+    id       = azurerm_resource_group.machine_catalogs.id
+  }
+}
+
 output "resource_location_plan" {
   description = "Citrix resource location details."
   value       = local.resource_location_plan

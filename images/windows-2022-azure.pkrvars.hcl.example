@@ -11,8 +11,18 @@ azure_imgoffer     = "WindowsServer"
 azure_imgsku       = "2022-datacenter-azure-edition"
 azure_imgversion   = "latest"
 
-install_winget_packages = false
-winget_package_ids      = []
+install_chocolatey_packages = false
+chocolatey_packages         = []
+
+install_citrix_vda        = false
+citrix_vda_installer_url  = ""
+citrix_vda_installer_args = ""
+
+run_citrix_optimizer          = false
+citrix_optimizer_zip_url      = ""
+citrix_optimizer_template_name = "Citrix_Windows_Server_2022_2009.xml"
+
+prepare_for_citrix_mcs = true
 
 managed_image_tags = {
   Environment = "demo"

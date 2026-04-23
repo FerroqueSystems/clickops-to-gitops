@@ -15,9 +15,14 @@ permissions:
   id-token: write
   contents: read
 
+concurrency:
+  group: terraform-plan-${{ inputs.component }}
+  cancel-in-progress: false
+
 jobs:
   plan:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
 
     steps:
       - uses: actions/checkout@v4
@@ -40,6 +45,13 @@ jobs:
           TFSTATE_RESOURCE_GROUP: ${{ vars.TFSTATE_RESOURCE_GROUP }}
           TFSTATE_STORAGE_ACCOUNT: ${{ vars.TFSTATE_STORAGE_ACCOUNT }}
           TFSTATE_CONTAINER: ${{ vars.TFSTATE_CONTAINER }}
+          TF_INPUT: "0"
+          TF_IN_AUTOMATION: "true"
+          TF_VAR_citrix_customer_id: ${{ secrets.CITRIX_CUSTOMER_ID }}
+          TF_VAR_citrix_client_id: ${{ secrets.CITRIX_CLIENT_ID }}
+          TF_VAR_citrix_client_secret: ${{ secrets.CITRIX_CLIENT_SECRET }}
+          TF_VAR_cloud_connector_admin_password: ${{ secrets.CLOUD_CONNECTOR_ADMIN_PASSWORD }}
+          TF_VAR_cloud_connector_domain_join_password: ${{ secrets.CLOUD_CONNECTOR_DOMAIN_JOIN_PASSWORD }}
           # 🔐 Add secrets here (TF_VAR_<terraform variable name>)
           TF_VAR_adc_admin_password: ${{ secrets.ADC_ADMIN_PASSWORD }}
           TF_VAR_citrixadc_rpc_node_password: ${{ secrets.CITRIXADC_RPC_NODE_PASSWORD }}
@@ -51,13 +63,17 @@ jobs:
           set -euo pipefail
           if [ "${{ inputs.component }}" = "daas" ]; then
             cd infra/workloads/daas/terraform
+            test -f daas.auto.tfvars || {
+              echo "Missing infra/workloads/daas/terraform/daas.auto.tfvars in the branch being executed."
+              exit 1
+            }
             terraform fmt -check -recursive
             terraform init \
               -backend-config="resource_group_name=${TFSTATE_RESOURCE_GROUP}" \
               -backend-config="storage_account_name=${TFSTATE_STORAGE_ACCOUNT}" \
               -backend-config="container_name=${TFSTATE_CONTAINER}" \
               -backend-config="key=infra/workloads/daas/terraform.tfstate"
-            terraform plan
+            terraform plan -input=false -no-color -lock-timeout=60s -var-file=daas.auto.tfvars
           else
             cd infra/workloads/netscaler/terraform
             terraform fmt -check -recursive
@@ -66,5 +82,5 @@ jobs:
               -backend-config="storage_account_name=${TFSTATE_STORAGE_ACCOUNT}" \
               -backend-config="container_name=${TFSTATE_CONTAINER}" \
               -backend-config="key=infra/workloads/netscaler/terraform.tfstate"
-            terraform plan -var-file=clickops.tfvars
+            terraform plan -input=false -no-color -lock-timeout=60s -var-file=clickops.tfvars
           fi

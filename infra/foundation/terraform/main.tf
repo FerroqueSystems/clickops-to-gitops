@@ -55,6 +55,20 @@ module "adm_agent" {
   location            = var.location
 }
 
+module "artifact_storage" {
+  source = "./modules/artifact-storage"
+  count  = var.enable_artifact_storage ? 1 : 0
+
+  resource_group_name      = var.resource_group_name
+  location                 = var.location
+  storage_account_name     = var.artifact_storage_account_name
+  container_name           = var.artifact_storage_container_name
+  account_tier             = var.artifact_storage_account_tier
+  account_replication_type = var.artifact_storage_account_replication_type
+  access_tier              = var.artifact_storage_access_tier
+  tags                     = var.artifact_storage_tags
+}
+
 module "compute_gallery" {
   source = "./modules/compute-gallery"
   count  = var.enable_compute_gallery ? 1 : 0

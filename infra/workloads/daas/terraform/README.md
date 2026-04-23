@@ -28,17 +28,32 @@ Rotating layer:
   - now provisions Windows Server Cloud Connector VMs, optional AD domain join,
     WinRM bootstrap, auto-shutdown schedules, and optional system-assigned managed identity
 - `machine_catalogs.tf`: rotating catalog layer keyed by `catalog_generation`
+  - now creates real `citrix_machine_catalog` resources backed by the Azure Compute Gallery image versions
 - `delivery_groups.tf`: stable delivery-group layer that can point to a new catalog generation
+  - still emits the cutover plan only
 
 ## Notes
 
 - This scaffold now deploys the Azure VM layer for Cloud Connectors, creates
-  the Citrix Cloud resource location, and creates the Citrix Azure hosting
-  connection objects.
+  the Citrix Cloud resource location, creates the Citrix Azure hosting
+  connection objects, and creates the Citrix machine catalogs.
 - The recommended Azure hosting connection mode is
   `SystemAssignedManagedIdentity`, which requires system-assigned identities on
   the Cloud Connector VMs and Azure RBAC that allows those identities to manage
   the target Azure resources for MCS.
+- For machine catalogs, prefer a pre-created or imported Citrix service
+  account and pass its ID through
+  `machine_catalog_domain_service_account_id`. That keeps the AD credential in
+  Citrix instead of passing the password inline during catalog creation.
+- Keep the Citrix hosting unit scoped to the `server` subnet unless you have a
+  clear MCS requirement for additional subnets. Cloud Connectors are deployed as
+  static Azure VMs and do not need to be provisioned through the hosting unit.
+- Use a dedicated Azure resource group for machine catalog VDA resources. The
+  shared resource group can continue to host the gallery, hosting connection
+  dependencies, and Cloud Connectors.
+- This Terraform root grants the Cloud Connector system-assigned managed
+  identities `Contributor` on the dedicated machine catalog resource group so
+  Citrix MCS can create catalog Azure resources there.
 - The current NetScaler NSGs are lab-oriented and should be reviewed before placing Cloud Connectors or VDAs in these subnets.
 - The `client` subnet should remain ADC-facing. Use `management` for static support components and `server` for rotating machine catalogs after the NSGs are adjusted for DaaS traffic.
 
