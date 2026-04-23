@@ -15,6 +15,10 @@ permissions:
   id-token: write
   contents: read
 
+concurrency:
+  group: terraform-plan-${{ inputs.component }}
+  cancel-in-progress: false
+
 jobs:
   plan:
     runs-on: ubuntu-latest
@@ -59,13 +63,17 @@ jobs:
           set -euo pipefail
           if [ "${{ inputs.component }}" = "daas" ]; then
             cd infra/workloads/daas/terraform
+            test -f daas.auto.tfvars || {
+              echo "Missing infra/workloads/daas/terraform/daas.auto.tfvars in the branch being executed."
+              exit 1
+            }
             terraform fmt -check -recursive
             terraform init \
               -backend-config="resource_group_name=${TFSTATE_RESOURCE_GROUP}" \
               -backend-config="storage_account_name=${TFSTATE_STORAGE_ACCOUNT}" \
               -backend-config="container_name=${TFSTATE_CONTAINER}" \
               -backend-config="key=infra/workloads/daas/terraform.tfstate"
-            terraform plan -input=false -no-color
+            terraform plan -input=false -no-color -lock-timeout=60s -var-file=daas.auto.tfvars
           else
             cd infra/workloads/netscaler/terraform
             terraform fmt -check -recursive
@@ -74,5 +82,5 @@ jobs:
               -backend-config="storage_account_name=${TFSTATE_STORAGE_ACCOUNT}" \
               -backend-config="container_name=${TFSTATE_CONTAINER}" \
               -backend-config="key=infra/workloads/netscaler/terraform.tfstate"
-            terraform plan -input=false -no-color -var-file=clickops.tfvars
+            terraform plan -input=false -no-color -lock-timeout=60s -var-file=clickops.tfvars
           fi
