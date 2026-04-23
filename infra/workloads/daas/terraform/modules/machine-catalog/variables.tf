@@ -75,6 +75,16 @@ variable "vm_size" {
   type = string
 }
 
+variable "prepared_image_definition_name_override" {
+  type    = string
+  default = null
+}
+
+variable "machine_name_prefix_override" {
+  type    = string
+  default = null
+}
+
 variable "domain_name" {
   type = string
 }

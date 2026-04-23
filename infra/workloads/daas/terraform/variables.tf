@@ -359,15 +359,17 @@ variable "machine_catalogs" {
 variable "catalog_deployments" {
   description = "Managed machine catalog deployments. Keep old and new generations side by side here until cutover and retirement are complete."
   type = map(object({
-    logical_name          = string
-    generation            = string
-    subnet_role           = string
-    session_type          = string
-    image_definition_name = string
-    image_version         = string
-    machine_count         = number
-    vm_size               = string
-    delivery_group_name   = string
+    logical_name                            = string
+    generation                              = string
+    subnet_role                             = string
+    session_type                            = string
+    image_definition_name                   = string
+    image_version                           = string
+    machine_count                           = number
+    vm_size                                 = string
+    delivery_group_name                     = string
+    prepared_image_definition_name_override = optional(string)
+    machine_name_prefix_override            = optional(string)
   }))
   default = {}
 

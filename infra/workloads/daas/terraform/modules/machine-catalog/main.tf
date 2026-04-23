@@ -7,11 +7,14 @@ terraform {
 }
 
 locals {
-  prepared_image_definition_name = format("%s-%s", var.catalog_name_prefix, var.image_definition_name)
-  catalog_name                   = format("%s-%s-%s-%s", var.catalog_name_prefix, var.environment_name, var.logical_name, var.generation)
-  machine_name_prefix            = substr(lower(var.logical_name), 0, 12)
-  session_support                = var.session_type == "single_session" ? "SingleSession" : "MultiSession"
-  service_account_username       = split("@", reverse(split("\\", var.domain_join_username))[0])[0]
+  generation_token                       = substr(replace(var.generation, "-", ""), length(replace(var.generation, "-", "")) - 4, 4)
+  default_prepared_image_definition_name = format("%s-%s-%s", var.catalog_name_prefix, var.image_definition_name, var.generation)
+  prepared_image_definition_name         = coalesce(var.prepared_image_definition_name_override, local.default_prepared_image_definition_name)
+  catalog_name                           = format("%s-%s-%s-%s", var.catalog_name_prefix, var.environment_name, var.logical_name, var.generation)
+  default_machine_name_prefix            = substr(lower(format("%s%s", substr(replace(var.logical_name, "-", ""), 0, 8), local.generation_token)), 0, 12)
+  machine_name_prefix                    = coalesce(var.machine_name_prefix_override, local.default_machine_name_prefix)
+  session_support                        = var.session_type == "single_session" ? "SingleSession" : "MultiSession"
+  service_account_username               = split("@", reverse(split("\\", var.domain_join_username))[0])[0]
 }
 
 resource "citrix_image_definition" "this" {
@@ -107,6 +110,7 @@ resource "citrix_machine_catalog" "this" {
 locals {
   plan = {
     logical_name                   = var.logical_name
+    machine_name_prefix            = local.machine_name_prefix
     prepared_image_definition_name = local.prepared_image_definition_name
     prepared_image_definition_id   = citrix_image_definition.this.id
     prepared_image_version_id      = citrix_image_version.this.id
