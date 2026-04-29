@@ -83,3 +83,23 @@ check "active_delivery_group_catalogs_match_logical_name" {
     error_message = "Each active_delivery_group_catalogs mapping must point to a catalog_deployments entry with the same logical_name as the map key."
   }
 }
+
+check "cloud_connector_private_ip_addresses_match_instance_count" {
+  assert {
+    condition = (
+      length(var.cloud_connector_private_ip_addresses) == 0 ||
+      length(var.cloud_connector_private_ip_addresses) == var.cloud_connector_count
+    )
+    error_message = "cloud_connector_private_ip_addresses must be empty or contain one value per Cloud Connector."
+  }
+}
+
+check "cloud_connector_zones_match_instance_count" {
+  assert {
+    condition = (
+      length(var.cloud_connector_zones) == 0 ||
+      length(var.cloud_connector_zones) == var.cloud_connector_count
+    )
+    error_message = "cloud_connector_zones must be empty or contain one value per Cloud Connector."
+  }
+}

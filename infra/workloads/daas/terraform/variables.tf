@@ -204,22 +204,12 @@ variable "cloud_connector_private_ip_addresses" {
   description = "Optional static private IP addresses for the Cloud Connector NICs. Leave empty to use dynamic allocation."
   type        = list(string)
   default     = []
-
-  validation {
-    condition     = length(var.cloud_connector_private_ip_addresses) == 0 || length(var.cloud_connector_private_ip_addresses) == var.cloud_connector_count
-    error_message = "cloud_connector_private_ip_addresses must be empty or contain one value per Cloud Connector."
-  }
 }
 
 variable "cloud_connector_zones" {
   description = "Optional availability zones for the Cloud Connector VMs."
   type        = list(string)
   default     = ["1", "2"]
-
-  validation {
-    condition     = length(var.cloud_connector_zones) == 0 || length(var.cloud_connector_zones) == var.cloud_connector_count
-    error_message = "cloud_connector_zones must be empty or contain one value per Cloud Connector."
-  }
 }
 
 variable "cloud_connector_image_publisher" {
