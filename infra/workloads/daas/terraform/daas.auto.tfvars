@@ -79,8 +79,8 @@ catalog_deployments = {
 }
 
 active_delivery_group_catalogs = {
-  win11-pooled = "win11-pooled-2026-03"
-  ws2022-apps  = "ws2022-apps-2026-03"
+  win11-pooled = "win11-pooled-2026-04"
+  ws2022-apps  = "ws2022-apps-2026-04"
 }
 
 tags = {
