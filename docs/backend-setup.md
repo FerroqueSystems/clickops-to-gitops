@@ -27,6 +27,8 @@ In GitHub repository variables, add:
 - `TFSTATE_STORAGE_ACCOUNT`
 - `TFSTATE_CONTAINER`
 
+If GitHub Actions should be able to run from feature branches while still using the shared production Terraform state, prefer an environment-scoped OIDC trust instead of a branch-scoped one. Configure the Microsoft Entra federated credential subject as `repo:<org>/<repo>:environment:production` and set `environment: production` on the OIDC jobs in GitHub Actions. A branch-scoped subject such as `repo:<org>/<repo>:ref:refs/heads/main` or `repo:<org>/<repo>:ref:refs/heads/<feature-branch>` only matches that exact ref.
+
 ## Per-root backend config
 
 Each Terraform root uses an empty `backend "azurerm" {}` block and a local backend config file.
