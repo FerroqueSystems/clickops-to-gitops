@@ -145,6 +145,21 @@ resource "azurerm_network_security_group" "terraform-server-subnet-security-grou
   resource_group_name = azurerm_resource_group.terraform-resource-group.name
 }
 
+// Allow Azure Bastion reachability checks and target access to server-subnet VMs.
+resource "azurerm_network_security_rule" "terraform-server-allow-azure-bastion-inbound" {
+  name                        = "terraform-server-allow-azure-bastion-inbound"
+  priority                    = 890
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "Tcp"
+  source_port_range           = "*"
+  destination_port_ranges     = ["22", "3389"]
+  source_address_prefix       = "168.63.129.16/32"
+  destination_address_prefix  = "*"
+  resource_group_name         = azurerm_resource_group.terraform-resource-group.name
+  network_security_group_name = azurerm_network_security_group.terraform-server-subnet-security-group.name
+}
+
 // Allow east-west traffic from the management subnet to server-subnet workloads.
 resource "azurerm_network_security_rule" "terraform-server-allow-management-inbound" {
   name                        = "terraform-server-allow-management-inbound"
