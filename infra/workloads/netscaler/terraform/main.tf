@@ -46,6 +46,23 @@ resource "azurerm_network_security_group" "terraform-management-subnet-security-
   resource_group_name = azurerm_resource_group.terraform-resource-group.name
 }
 
+// Allow management-subnet hosts to initiate east-west traffic to the server subnet.
+resource "azurerm_network_security_rule" "terraform-management-allow-server-outbound" {
+  name                   = "terraform-management-allow-server-outbound"
+  priority               = 900
+  direction              = "Outbound"
+  access                 = "Allow"
+  protocol               = "*"
+  source_port_range      = "*"
+  destination_port_range = "*"
+  source_address_prefix  = "*"
+  destination_address_prefixes = [
+    azurerm_subnet.terraform-server-subnet.address_prefixes[0],
+  ]
+  resource_group_name         = azurerm_resource_group.terraform-resource-group.name
+  network_security_group_name = azurerm_network_security_group.terraform-management-subnet-security-group.name
+}
+
 // Allow east-west traffic from the server subnet to management services such as Cloud Connectors.
 resource "azurerm_network_security_rule" "terraform-allow-server-subnet-to-management" {
   name                        = "terraform-allow-server-subnet-to-management"
@@ -126,6 +143,21 @@ resource "azurerm_network_security_group" "terraform-server-subnet-security-grou
   name                = "terraform-server-subnet-security-group"
   location            = var.location
   resource_group_name = azurerm_resource_group.terraform-resource-group.name
+}
+
+// Allow east-west traffic from the management subnet to server-subnet workloads.
+resource "azurerm_network_security_rule" "terraform-server-allow-management-inbound" {
+  name                        = "terraform-server-allow-management-inbound"
+  priority                    = 900
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "*"
+  source_port_range           = "*"
+  destination_port_range      = "*"
+  source_address_prefix       = azurerm_subnet.terraform-management-subnet.address_prefixes[0]
+  destination_address_prefix  = "*"
+  resource_group_name         = azurerm_resource_group.terraform-resource-group.name
+  network_security_group_name = azurerm_network_security_group.terraform-server-subnet-security-group.name
 }
 
 // Allow server-subnet VDAs to reach Cloud Connectors and other management services.
