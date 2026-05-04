@@ -46,6 +46,21 @@ resource "azurerm_network_security_group" "terraform-management-subnet-security-
   resource_group_name = azurerm_resource_group.terraform-resource-group.name
 }
 
+// Allow east-west traffic from the server subnet to management services such as Cloud Connectors.
+resource "azurerm_network_security_rule" "terraform-allow-server-subnet-to-management" {
+  name                        = "terraform-allow-server-subnet-to-management"
+  priority                    = 900
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "*"
+  source_port_range           = "*"
+  destination_port_range      = "*"
+  source_address_prefix       = azurerm_subnet.terraform-server-subnet.address_prefixes[0]
+  destination_address_prefix  = "*"
+  resource_group_name         = azurerm_resource_group.terraform-resource-group.name
+  network_security_group_name = azurerm_network_security_group.terraform-management-subnet-security-group.name
+}
+
 // Allow ssh, http and https from controlling subnet
 resource "azurerm_network_security_rule" "terraform-allow-all-from-controlling-subnet" {
   name                        = "terraform-allow-all-from-controlling-subnet"
@@ -113,7 +128,24 @@ resource "azurerm_network_security_group" "terraform-server-subnet-security-grou
   resource_group_name = azurerm_resource_group.terraform-resource-group.name
 }
 
-// Next two rules: Allow server subnet to reply only inside its own subnet
+// Allow server-subnet VDAs to reach Cloud Connectors and other management services.
+resource "azurerm_network_security_rule" "terraform-server-allow-management-outbound" {
+  name                   = "terraform-server-allow-management-outbound"
+  priority               = 990
+  direction              = "Outbound"
+  access                 = "Allow"
+  protocol               = "*"
+  source_port_range      = "*"
+  destination_port_range = "*"
+  source_address_prefix  = "*"
+  destination_address_prefixes = [
+    azurerm_subnet.terraform-management-subnet.address_prefixes[0],
+  ]
+  resource_group_name         = azurerm_resource_group.terraform-resource-group.name
+  network_security_group_name = azurerm_network_security_group.terraform-server-subnet-security-group.name
+}
+
+// Next rules: Allow server subnet east-west traffic, then deny everything else outbound.
 resource "azurerm_network_security_rule" "terraform-server-allow-outbound" {
   name                   = "terraform-server-allow-subnet-outbound"
   priority               = 1000
