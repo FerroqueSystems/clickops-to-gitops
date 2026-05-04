@@ -1,6 +1,6 @@
 subscription_id             = "0cb554f1-e4b4-4246-8604-b050e5dec014"
 environment_name            = "demo"
-catalog_generation          = "2026-04"
+catalog_generation          = "2026-05"
 compute_gallery_name        = "cgclickopsdemo"
 shared_resource_group_name  = "rg-clickops-gitops-demo"
 shared_virtual_network_name = "terraform-virtual-network"
@@ -28,24 +28,24 @@ cloud_connector_auto_shutdown_time     = "1800"
 cloud_connector_auto_shutdown_timezone = "Eastern Standard Time"
 
 catalog_deployments = {
-  win11-pooled-2026-04 = {
+  win11-pooled-2026-05 = {
     logical_name          = "win11-pooled"
-    generation            = "2026-04"
+    generation            = "2026-05"
     subnet_role           = "server"
     session_type          = "single_session"
     image_definition_name = "win11-25h2-cvad"
-    image_version         = "1.0.2"
+    image_version         = "5.2.1"
     machine_count         = 5
     vm_size               = "Standard_D4s_v5"
     delivery_group_name   = "dg-win11-pooled"
   }
-  ws2022-apps-2026-04 = {
+  ws2022-apps-2026-05 = {
     logical_name          = "ws2022-apps"
-    generation            = "2026-04"
+    generation            = "2026-05"
     subnet_role           = "server"
     session_type          = "multi_session"
     image_definition_name = "ws2022-cvad-apps"
-    image_version         = "1.0.2"
+    image_version         = "5.2.1"
     machine_count         = 3
     vm_size               = "Standard_D8s_v5"
     delivery_group_name   = "dg-published-apps"
@@ -53,8 +53,8 @@ catalog_deployments = {
 }
 
 active_delivery_group_catalogs = {
-  win11-pooled = "win11-pooled-2026-04"
-  ws2022-apps  = "ws2022-apps-2026-04"
+  win11-pooled = "win11-pooled-2026-05"
+  ws2022-apps  = "ws2022-apps-2026-05"
 }
 
 tags = {
