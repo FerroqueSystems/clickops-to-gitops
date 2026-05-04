@@ -37,7 +37,6 @@ cloud_connector_private_ip_addresses = [
 ]
 cloud_connector_enable_domain_join   = true
 cloud_connector_domain_name          = "clickops.demo"
-cloud_connector_domain_join_username = "CLICKOPS\\localadmin"
 # Preferred for machine catalogs: create or import a Citrix service account in
 # Web Studio and set its ID here so MCS uses the stored credential instead of an
 # inline password during catalog creation.
@@ -118,6 +117,7 @@ tags = {
 # network boundaries.
 # Secrets are provided via environment variables or GitHub Secrets:
 # TF_VAR_cloud_connector_admin_password
+# TF_VAR_cloud_connector_domain_join_username
 # TF_VAR_cloud_connector_domain_join_password
 # TF_VAR_citrix_customer_id
 # TF_VAR_citrix_client_id

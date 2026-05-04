@@ -22,7 +22,6 @@ cloud_connector_private_ip_addresses = [
 ]
 cloud_connector_enable_domain_join     = true
 cloud_connector_domain_name            = "clickops.demo"
-cloud_connector_domain_join_username   = "CLICKOPS\\localadmin"
 cloud_connector_auto_shutdown_enabled  = true
 cloud_connector_auto_shutdown_time     = "1800"
 cloud_connector_auto_shutdown_timezone = "Eastern Standard Time"
@@ -65,4 +64,5 @@ tags = {
 
 # Secrets are provided via environment variables or GitHub Secrets:
 # TF_VAR_cloud_connector_admin_password
+# TF_VAR_cloud_connector_domain_join_username
 # TF_VAR_cloud_connector_domain_join_password

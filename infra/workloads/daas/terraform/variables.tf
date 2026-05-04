@@ -262,7 +262,7 @@ variable "cloud_connector_domain_name" {
 variable "cloud_connector_domain_join_username" {
   description = "Domain user with permission to join the Cloud Connector VMs to Active Directory."
   type        = string
-  default     = "CLICKOPS\\localadmin"
+  default     = null
 }
 
 variable "cloud_connector_domain_join_password" {

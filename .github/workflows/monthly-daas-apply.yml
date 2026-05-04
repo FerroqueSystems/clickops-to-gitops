@@ -34,6 +34,7 @@ jobs:
       TF_VAR_citrix_client_id: ${{ secrets.CITRIX_CLIENT_ID }}
       TF_VAR_citrix_client_secret: ${{ secrets.CITRIX_CLIENT_SECRET }}
       TF_VAR_cloud_connector_admin_password: ${{ secrets.CLOUD_CONNECTOR_ADMIN_PASSWORD }}
+      TF_VAR_cloud_connector_domain_join_username: ${{ secrets.CLOUD_CONNECTOR_DOMAIN_JOIN_USERNAME }}
       TF_VAR_cloud_connector_domain_join_password: ${{ secrets.CLOUD_CONNECTOR_DOMAIN_JOIN_PASSWORD }}
 
     steps:
