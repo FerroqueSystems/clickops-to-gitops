@@ -1,6 +1,12 @@
-# Terraform remote backend (Azure Storage) setup
+# Terraform Remote Backend Setup
 
-Create a resource group, storage account and blob container to hold Terraform state. Replace `<uniquename>` and `<subscription-id>` with your values.
+This repo uses Azure Storage remote state for the Terraform roots under `infra/`.
+
+The current GitHub Actions workflows consume backend settings from repository variables and then pass a root-specific `key` value during `terraform init`.
+
+## 1. Create The Shared State Storage
+
+Replace `<uniquename>` and `<subscription-id>` with your values.
 
 ```bash
 az group create -n rg-terraform-state -l eastus
@@ -8,60 +14,108 @@ az storage account create -n tfstate<uniquename> -g rg-terraform-state -l eastus
 az storage container create -n tfstate --account-name tfstate<uniquename>
 ```
 
-Assign a service principal (or use GitHub OIDC) permissions to the storage account. For SPN auth:
+## 2. Grant CI Access
+
+OIDC is the preferred model for GitHub Actions. If you use a service principal instead, create one and capture the resulting IDs and secret:
 
 ```bash
-az ad sp create-for-rbac --name "github-actions-clickops" --role "Contributor" --scopes /subscriptions/<subscription-id>/resourceGroups/rg-terraform-state
-
-# Note the appId and password for GitHub Secrets: ARM_CLIENT_ID, ARM_CLIENT_SECRET, ARM_TENANT_ID, ARM_SUBSCRIPTION_ID
+az ad sp create-for-rbac \
+  --name "github-actions-clickops" \
+  --role "Contributor" \
+  --scopes /subscriptions/<subscription-id>/resourceGroups/rg-terraform-state
 ```
 
-In GitHub repository secrets, add:
+For GitHub OIDC, use a federated credential subject that matches how the workflow runs.
+
+Recommended when using protected environments:
+
+- `repo:<org>/<repo>:environment:production`
+
+Branch-scoped subjects such as `repo:<org>/<repo>:ref:refs/heads/main` only match that exact ref.
+
+## 3. Configure GitHub Variables And Secrets
+
+Repository variables used by `pipelines/github-actions/deploy.yml`:
+
+- `TFSTATE_RESOURCE_GROUP`
+- `TFSTATE_STORAGE_ACCOUNT`
+- `TFSTATE_CONTAINER`
+
+Azure authentication secrets commonly required by the workflows:
+
 - `ARM_CLIENT_ID`
 - `ARM_CLIENT_SECRET`
 - `ARM_TENANT_ID`
 - `ARM_SUBSCRIPTION_ID`
 
-In GitHub repository variables, add:
-- `TFSTATE_RESOURCE_GROUP`
-- `TFSTATE_STORAGE_ACCOUNT`
-- `TFSTATE_CONTAINER`
+Workload-specific secrets are separate from backend configuration. For example:
 
-If GitHub Actions should be able to run from feature branches while still using the shared production Terraform state, prefer an environment-scoped OIDC trust instead of a branch-scoped one. Configure the Microsoft Entra federated credential subject as `repo:<org>/<repo>:environment:production` and set `environment: production` on the OIDC jobs in GitHub Actions. A branch-scoped subject such as `repo:<org>/<repo>:ref:refs/heads/main` or `repo:<org>/<repo>:ref:refs/heads/<feature-branch>` only matches that exact ref.
+- NetScaler workflow values such as `ADC_ADMIN_PASSWORD`
+- DaaS Terraform variables such as `TF_VAR_citrix_customer_id`
+- DaaS and Cloud Connector credentials such as `TF_VAR_cloud_connector_admin_password`
 
-## Per-root backend config
+The backend variables only control where state lives. They do not replace the runtime credentials required by each Terraform root.
 
-Each Terraform root uses an empty `backend "azurerm" {}` block and a local backend config file.
+## 4. Per-Root Backend Files For Local Use
 
-Example files:
+Each Terraform root includes an empty `backend "azurerm" {}` block and can be initialized locally with a `backend.hcl` file.
+
+Examples in this repo:
+
+- `infra/foundation/terraform/backend.tf.example`
 - `infra/workloads/ad/terraform/backend.hcl.example`
 - `infra/workloads/daas/terraform/backend.hcl.example`
 - `infra/workloads/netscaler/terraform/backend.hcl.example`
 
-Copy the relevant example file to `backend.hcl` in that root and replace the placeholders with your real state resource names.
+Copy the example file for the root you are working in and replace the placeholders with your real state resource names.
 
-Example for NetScaler:
+## 5. Local Initialization Examples
 
-```bash
+NetScaler:
+
+```powershell
 cd infra/workloads/netscaler/terraform
-cp backend.hcl.example backend.hcl
-terraform init -migrate-state -backend-config backend.hcl
+Copy-Item backend.hcl.example backend.hcl
+terraform init -migrate-state -backend-config=backend.hcl
 ```
 
-Example for AD:
+DaaS:
 
-```bash
-cd infra/workloads/ad/terraform
-cp backend.hcl.example backend.hcl
-terraform init -migrate-state -backend-config backend.hcl
-```
-
-Example for DaaS:
-
-```bash
+```powershell
 cd infra/workloads/daas/terraform
-cp backend.hcl.example backend.hcl
-terraform init -migrate-state -backend-config backend.hcl
+Copy-Item backend.hcl.example backend.hcl
+terraform init -migrate-state -backend-config=backend.hcl
 ```
 
-Use a different `key` value per root, but keep the same storage account and container so laptop, bastion, and CI all share one backend.
+AD:
+
+```powershell
+cd infra/workloads/ad/terraform
+Copy-Item backend.hcl.example backend.hcl
+terraform init -migrate-state -backend-config=backend.hcl
+```
+
+Foundation:
+
+```powershell
+cd infra/foundation/terraform
+Copy-Item backend.tf.example backend.tf
+terraform init
+```
+
+## 6. State Key Guidance
+
+Use one storage account and container for the repo, but a different `key` per Terraform root.
+
+Current workflow examples:
+
+- `infra/workloads/daas/terraform.tfstate`
+- `infra/workloads/netscaler/terraform.tfstate`
+
+That keeps state isolated while still letting laptops, bastions, and CI operate against the same backend.
+
+## 7. Operational Notes
+
+- Keep backend configuration out of tracked live `.tfvars` files.
+- Do not commit `backend.hcl` files with real tenant or storage values unless that is an intentional repo policy.
+- If you expand GitHub Actions to cover `foundation` or `ad`, reuse the same shared backend variables and assign a distinct `key` for each new root.
