@@ -45,7 +45,7 @@ catalog_deployments = {
     session_type          = "single_session"
     image_definition_name = "win11-25h2-cvad"
     image_version         = "5.2.1"
-    machine_count         = 5
+    machine_count         = 10
     vm_size               = "Standard_D4s_v5"
     delivery_group_name   = "dg-win11-pooled"
   }
@@ -56,7 +56,7 @@ catalog_deployments = {
     session_type          = "multi_session"
     image_definition_name = "ws2022-cvad-apps"
     image_version         = "1.0.2"
-    machine_count         = 3
+    machine_count         = 5
     vm_size               = "Standard_D8s_v5"
     delivery_group_name   = "dg-published-apps"
   }
